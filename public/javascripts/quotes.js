@@ -2,7 +2,8 @@ $(document).ready(function(){
   var count=1;
   $("#btnAdd").click(function(){
   
-    $("#container").append(addNewRow(count));
+    // $("#container").append(addNewRow(count));
+    $("#container").load('/');
     count++;
 
   });
