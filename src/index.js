@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Blogs from "./pages/Blogs";
 import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
+import AddQuote from "./pages/AddQuote";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="blogs" element={<Blogs />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="addquote" element={<AddQuote />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>
