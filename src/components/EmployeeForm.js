@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import './App.css';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 
-
 function App() {
   const [formFields, setFormFields] = useState([
     { employee: '', rate_type: '', rate: '', preset: '' },
+  ])
+
+  const [nonHumanResource, setNonHumanResource] = useState([
+    { resource: '', rate_type: '', rate: ''},
   ])
 
   const handleFormChange = (event, index) => {
@@ -20,7 +22,7 @@ function App() {
 
   const submit = (e) => {
     e.preventDefault();
-    console.log(formFields)
+    console.log(formFields);
   }
 
   const addFields = () => {
@@ -45,8 +47,8 @@ function App() {
       <form onSubmit={submit}>
         {formFields.map((form, index) => {
           return (
+            
             <Form key={index}>
-
               <Row>
                 <Col>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
