@@ -15,7 +15,7 @@ const Layout = () => {
             <Link to="/contact">Contact</Link>
           </li>
           <li>
-            <Link to="/AddQuote">Add Quote</Link>
+            <Link to="/Quote">Quote</Link>
           </li>
         </ul>
       </nav>

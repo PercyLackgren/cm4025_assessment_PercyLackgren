@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 
-function App() {
+function App({childToParent}) {
   const [formFields, setFormFields] = useState([
     { employee: '', rate_type: '', rate: '', preset: '' },
   ])
@@ -22,7 +22,8 @@ function App() {
 
   const submit = (e) => {
     e.preventDefault();
-    console.log(formFields);
+    // console.log(formFields);
+    childToParent(formFields)
   }
 
   const addFields = () => {
@@ -50,18 +51,7 @@ function App() {
             
             <Form key={index}>
               <Row>
-                <Col>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label>Employee name</Form.Label>
-                    <Form.Control name='employee' 
-                    type="text" 
-                    placeholder="Enter name" 
-                    onChange={event => handleFormChange(event, index)} 
-                    value={form.employee}
-                    />
-                  </Form.Group>
-                </Col>
-
+              <Form.Label>Employee</Form.Label>
                 <Col>
                   <Form.Label>Preset</Form.Label>
                   <Form.Select name='preset' value={form.preset} onChange={event => handleFormChange(event, index)}>
@@ -71,9 +61,7 @@ function App() {
                     <option value="Senior">Senior</option>
                   </Form.Select>
                 </Col>
-              </Row>
 
-              <Row>
                 <Col>
                   <Form.Label>Rate type</Form.Label>
                   <Form.Select name='rate_type' value={form.rate_type} onChange={event => handleFormChange(event, index)} aria-label="Default select example">
