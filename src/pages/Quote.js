@@ -1,58 +1,73 @@
 import { useState } from 'react';
 import EmployeeForm from "./components/EmployeeForm"
 import ResourceForm from "./components/ResourceForm"
+import SubTask from "./components/SubTask"
 import Button from 'react-bootstrap/Button';
 
 const AddQuote = () => {
-    // Hard coding some data for testing
-    const [Employee, setEmployee] = useState({
-        parent_id: "",
-        type: "",
-        preset_rate: "",
-        cost_type: "",
-        cost: ""
-    });
-    const [Resource, setResource] = useState({
-        parent_id: "",
-        type: "",
-        name: "",
-        cost_type: "",
-        cost: ""
-    });
+    
+    // Hold data
     const [data, setData] = useState([
     ]);
 
-    let handleChange = (i, e) => {
+    // When changes on form happen update the data in state
+    let handleChange = (index, sub_id, e) => {
         let newData = [...data];
-        newData[i][e.target.name] = e.target.value;
+        newData[sub_id][index][e.target.name] = e.target.value;
         setData(newData);
     }
 
-    let addResource = () => {
-        setData([...data, {
-            parent_id: "",
+    // Hard coding some data for testing
+    let addSubTask = () => {
+        let subTask = []
+        setData([...data, subTask])
+        console.log(data)
+    }
+
+
+    // Hard coding some data for testing
+    let addResource = (i) => {
+        let newData = [...data]
+        newData[i].push({
+            parent_id: 1,
+            sub_id: i,
             type: "Resource",
             name: "",
             cost_type: "",
-            cost: ""}])
+            cost: ""
+        })
+        setData(newData)
     }
 
-    let addEmployee = () => {
-        setData([...data, {
-            parent_id: "",
-            type: "",
+    // Hard coding some data for testing
+    let addEmployee = (i) => {
+        let newData = [...data]
+        newData[i].push({
+            parent_id: 1,
+            sub_id: i,
+            type: "Employee",
             preset_rate: "",
             cost_type: "",
             cost: ""
-        }])
+        })
+        setData(newData)
     }
 
+    // Remove subtask when clicked
     let handleRemove = (i) => {
         let newData = [...data]
         newData.splice(i,1)
         setData(newData)
     }
+    
+    // Remove item when clicked
+    let handleRemoveItem = (i, sub_id) => {
+        let newData = [...data]
+        newData[sub_id].splice(i,1)
+        setData(newData)
+    }
 
+    // Alert output for data, for testing, submit to API once final
     let handleSubmit = (event) => {
         event.preventDefault();
         alert(JSON.stringify(data))
@@ -62,26 +77,21 @@ const AddQuote = () => {
     return (
         <div>
             <h1>Add Quote</h1>
-            <button onClick={addEmployee}>Add Employee</button><button onClick={addResource}>Add Resource</button><button onClick={handleSubmit}>Submit</button>
+            <Button onClick={addSubTask}>Add Sub Task</Button>
+            <Button onClick={handleSubmit}>Submit</Button>
+            <label>Total Cost: </label>
+            {/* Display data */}
             {data.map((element, index) => {
-                if (element.type === "Resource") {
-                    return <ResourceForm 
-                        type={element.type} 
-                        cost_type={element.cost_type} 
-                        cost={element.cost} 
-                        onDelete={e => handleRemove(index, e)}
-                        onChange={e => handleChange(index, e)}>
-                    </ResourceForm>
-                } else {
-                    return <EmployeeForm 
-                    type={element.type} 
-                    preset_rate={element.preset_rate}
-                    cost_type={element.cost_type}
-                    cost={element.cost} 
-                    onDelete={e => handleRemove(index, e)}
-                    onChange={e => handleChange(index, e)}>
-                </EmployeeForm>
-                }
+                return <SubTask 
+                addEmployee={e => addEmployee(index, e)}
+                addResource={e => addResource(index, e)}
+                handleRemove={handleRemove}
+                handleRemoveItem={handleRemoveItem}
+                handleChange={handleChange}
+                subTask={element}
+                onDelete={e => handleRemove(index, e)}
+                index={index}
+                ></SubTask>
             })}
         </div> 
     )
