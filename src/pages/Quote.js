@@ -6,22 +6,20 @@ import Button from 'react-bootstrap/Button';
 const AddQuote = () => {
     // Hard coding some data for testing
     const [Employee, setEmployee] = useState({
-        parent_id: 1,
-        type: "Employee",
-        preset_rate: "None",
-        cost_type: "Daily",
-        cost: 100
+        parent_id: "",
+        type: "",
+        preset_rate: "",
+        cost_type: "",
+        cost: ""
     });
     const [Resource, setResource] = useState({
-        parent_id: 1,
-        type: "Resource",
-        name: "Internet",
-        cost_type: "Monthly",
-        cost: 100
+        parent_id: "",
+        type: "",
+        name: "",
+        cost_type: "",
+        cost: ""
     });
     const [data, setData] = useState([
-        Employee,
-        Resource
     ]);
 
     let handleChange = (i, e) => {
@@ -40,10 +38,16 @@ const AddQuote = () => {
     }
 
     let addEmployee = () => {
-        setData([...data, Employee])
+        setData([...data, {
+            parent_id: "",
+            type: "",
+            preset_rate: "",
+            cost_type: "",
+            cost: ""
+        }])
     }
 
-    let removeResource = (i) => {
+    let handleRemove = (i) => {
         let newData = [...data]
         newData.splice(i,1)
         setData(newData)
@@ -58,20 +62,27 @@ const AddQuote = () => {
     return (
         <div>
             <h1>Add Quote</h1>
+            <button onClick={addEmployee}>Add Employee</button><button onClick={addResource}>Add Resource</button><button onClick={handleSubmit}>Submit</button>
             {data.map((element, index) => {
-                if (element.type == "Resource") {
+                if (element.type === "Resource") {
                     return <ResourceForm 
                         type={element.type} 
                         cost_type={element.cost_type} 
                         cost={element.cost} 
-                        onDelete={e => removeResource(index, e)}
+                        onDelete={e => handleRemove(index, e)}
                         onChange={e => handleChange(index, e)}>
                     </ResourceForm>
                 } else {
-                    return <label>Employee</label>
+                    return <EmployeeForm 
+                    type={element.type} 
+                    preset_rate={element.preset_rate}
+                    cost_type={element.cost_type}
+                    cost={element.cost} 
+                    onDelete={e => handleRemove(index, e)}
+                    onChange={e => handleChange(index, e)}>
+                </EmployeeForm>
                 }
             })}
-            <button onClick={addEmployee}>Add Employee</button><button onClick={addResource}>Add Resource</button><button onClick={handleSubmit}>Submit</button>
         </div> 
     )
   };
