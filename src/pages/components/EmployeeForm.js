@@ -25,10 +25,13 @@ function EmployeeForm(props) {
           <Form.Label>Cost type</Form.Label>
           <Form.Select name="cost_type" 
           value={props.cost_type} 
-          onChange={props.onChange}>
+          onChange={props.onChange}
+          // Disable when a preset is selected
+          {...props.preset_rate === "None" ? {} : {disabled: true,  value: "preset"}}>
             <option value="None">Select rate type</option>
             <option value="Hourly">Hourly</option>
             <option value="Daily">Daily</option>
+            <option hidden value="preset">Preset</option>
           </Form.Select>
         </Col>
 
@@ -40,7 +43,8 @@ function EmployeeForm(props) {
             value={props.cost}
             placeholder="Enter cost"
             onChange={props.onChange} 
-            />
+            // Disable when a preset is selected
+            {...props.preset_rate === "None" ? {} : {disabled: true, value: 0}}/>
           </Form.Group>
         </Col>
         <Col>

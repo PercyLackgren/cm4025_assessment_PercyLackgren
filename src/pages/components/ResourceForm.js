@@ -10,6 +10,17 @@ function ResourceForm(props) {
       <Row>
         <Form.Label>{props.type}</Form.Label>
         <Col>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <Form.Label>Name</Form.Label>
+            <Form.Control name='desc'
+            type="text" 
+            value={props.desc}
+            placeholder="Enter description"
+            onChange={props.onChange} 
+            />
+          </Form.Group>
+        </Col>
+        <Col>
           <Form.Label>Cost type</Form.Label>
           <Form.Select name="cost_type" 
           value={props.cost_type} 

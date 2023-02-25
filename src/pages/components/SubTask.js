@@ -3,12 +3,21 @@ import EmployeeForm from "./EmployeeForm"
 import ResourceForm from "./ResourceForm"
 
 function SubTask(props) {
+
+  // Calcualte subtask cost, parsing text to number looks jank
+  var subTaskCost = 0
+  props.subTask.map((element) => {
+    if(Number.isInteger(parseInt(element.cost))) {
+      subTaskCost += parseInt(element.cost)
+    }
+  })
+
   return (
     <div style={{backgroundColor: "AntiqueWhite", margin:5, padding:5}}>
         <Button onClick={props.addEmployee}>Add Employee</Button>
         <Button onClick={props.addResource}>Add Resource</Button>
         <Button onClick={props.onDelete}>Remove Task</Button>
-        <label>Sub Task Cost: </label>
+        <label>Sub Task Cost: £{subTaskCost}</label>
         {props.subTask.map((element, index) => {
                 if (element.type === "Resource") {
                     return <ResourceForm 

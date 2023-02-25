@@ -32,7 +32,7 @@ const AddQuote = () => {
             parent_id: 1,
             sub_id: i,
             type: "Resource",
-            name: "",
+            desc: "",
             cost_type: "",
             cost: ""
         })
@@ -46,7 +46,7 @@ const AddQuote = () => {
             parent_id: 1,
             sub_id: i,
             type: "Employee",
-            preset_rate: "",
+            preset_rate: "None",
             cost_type: "",
             cost: ""
         })
@@ -74,12 +74,22 @@ const AddQuote = () => {
         console.log(data)
     }
 
+    var totalCost = 0
+    data.map((subTask) => {
+        subTask.map((element) => {
+            if(Number.isInteger(parseInt(element.cost))) {
+                totalCost += parseInt(element.cost)
+            }
+        })
+    })
+
+
     return (
         <div>
             <h1>Add Quote</h1>
             <Button onClick={addSubTask}>Add Sub Task</Button>
             <Button onClick={handleSubmit}>Submit</Button>
-            <label>Total Cost: </label>
+            <label>Total Cost: £{totalCost}</label>
             {/* Display data */}
             {data.map((element, index) => {
                 return <SubTask 
@@ -90,7 +100,6 @@ const AddQuote = () => {
                 handleChange={handleChange}
                 subTask={element}
                 onDelete={e => handleRemove(index, e)}
-                index={index}
                 ></SubTask>
             })}
         </div> 
