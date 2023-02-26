@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import EmployeeForm from "./components/EmployeeForm"
-import ResourceForm from "./components/ResourceForm"
 import SubTask from "./components/SubTask"
 import Button from 'react-bootstrap/Button';
+import axios from 'axios'
 
 const AddQuote = () => {
     
@@ -18,12 +17,12 @@ const AddQuote = () => {
     }
 
     // Hard coding some data for testing
-    let addSubTask = () => {
-        let subTask = []
+    let addSubTask = (subTask) => {
+        if (!Array.isArray(subTask)) {
+            subTask = []
+        }
         setData([...data, subTask])
-        console.log(data)
     }
-
 
     // Hard coding some data for testing
     let addResource = (i) => {
@@ -67,28 +66,63 @@ const AddQuote = () => {
         setData(newData)
     }
 
-    // Alert output for data, for testing, submit to API once final
-    let handleSubmit = (event) => {
-        event.preventDefault();
-        alert(JSON.stringify(data))
-        console.log(data)
-    }
-
+    // calculate total cost for display, FUDGELESS
     var totalCost = 0
-    data.map((subTask) => {
-        subTask.map((element) => {
+    data.forEach((subTask) => {
+        subTask.forEach((element) => {
             if(Number.isInteger(parseInt(element.cost))) {
                 totalCost += parseInt(element.cost)
             }
         })
     })
 
+    // Alert output for data, for testing, submit to API once final
+    let handleSubmit = (event) => {
+        event.preventDefault();
+        // alert(JSON.stringify(data))
+        // console.log(data)
+        storeItems(data)
+    }
+
+    // Store current page to database
+    let storeItems = (data) => {
+        // e.preventDefault();
+        console.log("Storing items")
+        console.log(data)
+        // First, clear the old list in the database:
+        axios.delete("http://127.0.0.1:8000/api/quote", { crossdomain: true }).then ((response) => {
+            // Iterate through data object to parse subtasks
+            data.forEach( subtask => {
+                // Iterate through subtasks to pull data for database
+                subtask.forEach( element => {
+                    // Send data as JSON
+                    axios.post("http://127.0.0.1:8000/api/quote", element).then((response) => {
+                        console.log(response.status, response.data);
+                    });
+                })
+            })
+        })
+    }
+
+    let getItems = (e) => {
+        console.log("Getting items")
+        e.preventDefault();
+        var tasks = "woop"
+        axios.get('http://127.0.0.1:8000/api/quote').then((response) => {
+            tasks = response.data;
+            console.log(tasks)
+            addSubTask(tasks)
+            });
+      }
+    
+    
 
     return (
         <div>
             <h1>Add Quote</h1>
             <Button onClick={addSubTask}>Add Sub Task</Button>
             <Button onClick={handleSubmit}>Submit</Button>
+            <Button onClick={getItems}>Pull From Database</Button>
             <label>Total Cost: £{totalCost}</label>
             {/* Display data */}
             {data.map((element, index) => {

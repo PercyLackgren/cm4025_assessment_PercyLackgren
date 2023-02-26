@@ -21,11 +21,12 @@ function SubTask(props) {
         {props.subTask.map((element, index) => {
                 if (element.type === "Resource") {
                     return <ResourceForm 
-                        type={element.type} 
-                        cost_type={element.cost_type} 
-                        cost={element.cost} 
-                        onDelete={e => props.handleRemoveItem(index, element.sub_id, e)}
-                        onChange={e => props.handleChange(index, element.sub_id, e)}>
+                      desc={element.desc}
+                      type={element.type}
+                      cost_type={element.cost_type} 
+                      cost={element.cost} 
+                      onDelete={e => props.handleRemoveItem(index, element.sub_id, e)}
+                      onChange={e => props.handleChange(index, element.sub_id, e)}>
                     </ResourceForm>
                 } else {
                     return <EmployeeForm 
