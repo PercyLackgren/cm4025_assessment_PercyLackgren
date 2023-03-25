@@ -17,12 +17,14 @@ const QuoteSchema = new mongoose.Schema({
     },
     description: {
         type: String,
-        required: true
     },
-        cost_type: {
+    preset_rate: {
+        type: String,
+    },
+    cost_type: {
         type: String
     },
-        cost: {
+    cost: {
         type: Number
     }
 });

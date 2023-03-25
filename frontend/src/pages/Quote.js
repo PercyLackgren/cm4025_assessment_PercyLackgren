@@ -1,7 +1,22 @@
 import { useState } from 'react';
 import SubTask from "./components/SubTask"
 import Button from 'react-bootstrap/Button';
+
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+
+const CreateQuote = (props) => {
+    // Define the state with useState hook
+    const navigate = useNavigate();
+    const [quote, setQuote] = useState({
+        user: '',
+        sub_id: '',
+        type: '',
+        description: '',
+        cost_type: '',
+        cost: ''
+    })
+}
 
 const AddQuote = () => {
     
@@ -28,12 +43,12 @@ const AddQuote = () => {
     let addResource = (i) => {
         let newData = [...data]
         newData[i].push({
-            parent_id: 1,
+            user_id: 1,
             sub_id: i,
-            type: "Resource",
-            desc: "",
-            cost_type: "",
-            cost: ""
+            type: 'Resource',
+            description: '',
+            cost_type: '',
+            cost: ''
         })
         setData(newData)
     }
@@ -42,12 +57,12 @@ const AddQuote = () => {
     let addEmployee = (i) => {
         let newData = [...data]
         newData[i].push({
-            parent_id: 1,
+            user_id: 1,
             sub_id: i,
-            type: "Employee",
-            preset_rate: "None",
-            cost_type: "",
-            cost: ""
+            type: 'Employee',
+            preset_rate: 'None',
+            cost_type: '',
+            cost: ''
         })
         setData(newData)
     }
@@ -69,9 +84,9 @@ const AddQuote = () => {
     // calculate total cost for display, FUDGELESS
     var totalCost = 0
     data.forEach((subTask) => {
-        subTask.forEach((element) => {
-            if(Number.isInteger(parseInt(element.cost))) {
-                totalCost += parseInt(element.cost)
+        subTask.forEach((quote) => {
+            if(Number.isInteger(parseInt(quote.cost))) {
+                totalCost += parseInt(quote.cost)
             }
         })
     })
@@ -90,13 +105,13 @@ const AddQuote = () => {
         console.log("Storing items")
         console.log(data)
         // First, clear the old list in the database:
-        axios.delete("http://127.0.0.1:8000/api/quote", { crossdomain: true }).then ((response) => {
+        axios.delete("http://127.0.0.1:8000/api/quotes", { crossdomain: true }).then((response) => {
             // Iterate through data object to parse subtasks
             data.forEach( subtask => {
                 // Iterate through subtasks to pull data for database
-                subtask.forEach( element => {
+                subtask.forEach( quote => {
                     // Send data as JSON
-                    axios.post("http://127.0.0.1:8000/api/quote", element).then((response) => {
+                    axios.post("http://127.0.0.1:8000/api/quotes", quote).then((response) => {
                         console.log(response.status, response.data);
                     });
                 })
@@ -108,7 +123,7 @@ const AddQuote = () => {
         console.log("Getting items")
         e.preventDefault();
         var tasks = "woop"
-        axios.get('http://127.0.0.1:8000/api/quote').then((response) => {
+        axios.get('http://127.0.0.1:8000/api/quotes').then((response) => {
             tasks = response.data;
             console.log(tasks)
             addSubTask(tasks)
@@ -125,14 +140,14 @@ const AddQuote = () => {
             <Button onClick={getItems}>Pull From Database</Button>
             <label>Total Cost: £{totalCost}</label>
             {/* Display data */}
-            {data.map((element, index) => {
+            {data.map((quote, index) => {
                 return <SubTask 
                 addEmployee={e => addEmployee(index, e)}
                 addResource={e => addResource(index, e)}
                 handleRemove={handleRemove}
                 handleRemoveItem={handleRemoveItem}
                 handleChange={handleChange}
-                subTask={element}
+                subTask={quote}
                 onDelete={e => handleRemove(index, e)}
                 ></SubTask>
             })}

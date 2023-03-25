@@ -6,9 +6,9 @@ function SubTask(props) {
 
   // Calcualte subtask cost, parsing text to number looks jank
   var subTaskCost = 0
-  props.subTask.map((element) => {
-    if(Number.isInteger(parseInt(element.cost))) {
-      subTaskCost += parseInt(element.cost)
+  props.subTask.map((quote) => {
+    if(Number.isInteger(parseInt(quote.cost))) {
+      subTaskCost += parseInt(quote.cost)
     }
   })
 
@@ -18,24 +18,24 @@ function SubTask(props) {
         <Button onClick={props.addResource}>Add Resource</Button>
         <Button onClick={props.onDelete}>Remove Task</Button>
         <label>Sub Task Cost: £{subTaskCost}</label>
-        {props.subTask.map((element, index) => {
-                if (element.type === "Resource") {
+        {props.subTask.map((quote, index) => {
+                if (quote.type === "Resource") {
                     return <ResourceForm 
-                      desc={element.desc}
-                      type={element.type}
-                      cost_type={element.cost_type} 
-                      cost={element.cost} 
-                      onDelete={e => props.handleRemoveItem(index, element.sub_id, e)}
-                      onChange={e => props.handleChange(index, element.sub_id, e)}>
+                      desc={quote.desc}
+                      type={quote.type}
+                      cost_type={quote.cost_type} 
+                      cost={quote.cost} 
+                      onDelete={e => props.handleRemoveItem(index, quote.sub_id, e)}
+                      onChange={e => props.handleChange(index, quote.sub_id, e)}>
                     </ResourceForm>
                 } else {
                     return <EmployeeForm 
-                      type={element.type} 
-                      preset_rate={element.preset_rate}
-                      cost_type={element.cost_type}
-                      cost={element.cost} 
-                      onDelete={e => props.handleRemoveItem(index, element.sub_id, e)}
-                      onChange={e => props.handleChange(index, element.sub_id, e)}>
+                      type={quote.type} 
+                      preset_rate={quote.preset_rate}
+                      cost_type={quote.cost_type}
+                      cost={quote.cost} 
+                      onDelete={e => props.handleRemoveItem(index, quote.sub_id, e)}
+                      onChange={e => props.handleChange(index, quote.sub_id, e)}>
                     </EmployeeForm>
                 }
             })}

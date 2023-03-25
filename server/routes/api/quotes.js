@@ -1,5 +1,4 @@
 // routes/api/quotes.js
-
 const express = require('express');
 const router = express.Router();
 
@@ -29,7 +28,7 @@ router.get('/:id', (req, res) => {
     .catch(err => res.status(404).json({ noquotefound: 'No quote found' }));
 });
 
-// @route GET api/quotes
+// @route POST api/quotes
 // @description add/save quote
 // @access Public
 router.post('/', (req, res) => {
@@ -38,7 +37,7 @@ router.post('/', (req, res) => {
     .catch(err => res.status(400).json({ error: 'Unable to add this quote' }));
 });
 
-// @route GET api/quotes/:id
+// @route PUT api/quotes/:id
 // @description Update quote
 // @access Public
 router.put('/:id', (req, res) => {
@@ -49,13 +48,22 @@ router.put('/:id', (req, res) => {
     );
 });
 
-// @route GET api/quotes/:id
+// @route DELETE api/quotes/:id
 // @description Delete quote by id
 // @access Public
 router.delete('/:id', (req, res) => {
   Quote.findByIdAndRemove(req.params.id, req.body)
     .then(quote => res.json({ mgs: 'Quote entry deleted successfully' }))
     .catch(err => res.status(404).json({ error: 'No such quote' }));
+});
+
+// @route DELETE api/quotes/
+// @description Delete all quotes TEMP FUNCTION
+// @access Public
+router.delete('/', (req, res) => {
+  Quote.deleteMany(req.params.id, req.body)
+    .then(quote => res.json({ mgs: 'Quotes deleted successfully' }))
+    .catch(err => res.status(404).json({ error: 'No such quotes' }));
 });
 
 module.exports = router;
