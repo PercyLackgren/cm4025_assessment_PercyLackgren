@@ -6,6 +6,10 @@ var path = require('path');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser')
+var cors = require('cors');
+
+// Enable CORS for all routes
+app.use(cors());
 
 // create application/json parser
 var jsonParser = bodyParser.json()
