@@ -11,3 +11,42 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+* {
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+tr {
+  border-bottom: solid 1px !important;
+}
+
+tr:hover {
+  background-color: whitesmoke;
+  transition: 0.3s;
+}
+
+th, td {
+  padding: 10px;
+}
+
+th {
+  background-color: whitesmoke;
+}
+
+table {
+  width: 100%;
+}
+
+.heading--border {
+  font-weight: bold;
+}
+
+.heading--border:after {
+  content: "";
+  display: block;
+  bottom: 0;
+  left: 0;
+  width: 128px;
+  height: 2px;
+  background: linear-gradient(90deg,#ffffff 0,#ff5f42 23%,#8141FF);
+}
