@@ -5,7 +5,10 @@ import '../index.css';
 // components
 import QuoteRow from './components/QuoteRow';
 
+axios.defaults.withCredentials = true
+
 function Home() {
+
     const [quotes, setQuotes] = useState([]);
 
     useEffect(() => {
@@ -23,22 +26,26 @@ function Home() {
     } else {
         quoteList = quotes.map((quote, k) => <QuoteRow quote={quote} key={k}></QuoteRow> )
     }
-    
+
     return (
         <div>
-            <div class="container"> 
+            <div className="container"> 
                 <br/>
-                <h1 class="heading--border">Quotes</h1>
+                <h1 className="heading--border">Quotes</h1>
                 <br/>
                 <table>
-                    <tr>
-                        <th>Author</th>
-                        <th>description</th>
-                        <th>Subtasks</th>
-                        <th>Quote</th>
-                        <th></th>
-                    </tr>
-                    {quoteList}
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>description</th>
+                            <th>Subtasks</th>
+                            <th>Quote</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {quoteList}
+                    </tbody>
                 </table>
             </div>
         </div>

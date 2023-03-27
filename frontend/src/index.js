@@ -9,6 +9,7 @@ import Blogs from "./pages/Blogs";
 import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
 import Quote from "./pages/Quote";
+import SignIn from "./pages/SignIn";
 
 // React
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="blogs" element={<Blogs />} />
           <Route path="contact" element={<Contact />} />
           <Route path="quote" element={<Quote />} />
+          <Route path="signin" element={<SignIn />} />
           <Route path="*" element={<NoPage />} />
         </Route>
       </Routes>

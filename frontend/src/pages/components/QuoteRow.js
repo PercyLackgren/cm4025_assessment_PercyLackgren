@@ -6,7 +6,7 @@ function quoteRow(props) {
     const quote = props.quote;
 
     return (
-        
+      
       <tr>
         <td>{quote.user_id}</td>
         <td>{quote.type}</td>

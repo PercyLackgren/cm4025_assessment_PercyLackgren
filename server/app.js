@@ -1,146 +1,85 @@
-// used the below tutorial to set up the MERN stack
-//https://blog.logrocket.com/mern-stack-tutorial/
+// Followed https://javascript.plainenglish.io/session-authentication-with-node-js-express-passport-and-mongodb-ffd1eea4521c
 
-// database config file
-// var path = require('path');
+/*
+  Include express and passport packages.
+*/
 const express = require('express');
-const connectDB = require('./config/db');
-const cors = require('cors');
+const session = require('express-session');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
-// routes
-const quotes = require('./routes/api/quotes');
+/*
+  Include the user model for saving to MongoDB VIA mongoose
+*/
+const User = require("./models/User");
+
+/*
+  Database connection -- We are using MongoDB for this tutorial
+*/
+const MongoStore = require('connect-mongo');
+const mongoose = require('mongoose');
+const mongoString = 'mongo connection string';
+mongoose.connect('mongodb://127.0.0.1:27017');
+const db = mongoose.connection;
 
 const app = express();
-// var bodyParser = require('body-parser')
 
-// create application/json parser
-// var jsonParser = bodyParser.json()
+/*
+  Session configuration and utilization of the MongoStore for storing
+  the session in the MongoDB database
+*/
+app.use(express.urlencoded({ extended: false }));
+app.use(session({
+  secret: 'your secret key',
+  resave: false,
+  saveUninitialized: true,
+  store: new MongoStore({ mongoUrl: db.client.s.url })
+}));
 
-// connect to database
-connectDB();
+/*
+  Setup the local passport strategy, add the serialize and 
+  deserialize functions that only saves the ID from the user
+  by default.
+*/
+const strategy = new LocalStrategy(User.authenticate())
+passport.use(strategy);
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.listen(8000, () => { console.log('Server started.') });
+
+// // use config
+// const config = require('config');
+// const db = config.get('mongoURI');
+
+
+
+// const passport = require('./passport/setup');
+
+// const app = express();
+
+// // why not
+// // app.disable('x-powered-by');
+
+// // connect to database
+// connectDB();
+
+// // Init Middleware
+// app.use(express.json({credentials: true, origin: "http://127.0.0.1:3000"}));
 
 // Enable CORS for all routes
-app.use(cors({ origin: true, credentials: true }));
+const cors = require('cors');
+app.use(cors({ 
+    origin: 'http://127.0.0.1:3000',
+    credentials: true 
+}));
 
-// Init Middleware
-app.use(express.json({ extended: false }));
+// // routes const
+const quotes = require('./routes/api/quotes');
+const users = require('./routes/api/users');
 
-// // The database
-// //const MongoClient = require('mongodb').MongoClient;
-// const { MongoClient } = require("mongodb");
-// //const uri = "mongodb://test:password@127.0.0.1:27017/mydb";
-// // Unsecured database
-// const uri = "mongodb://127.0.0.1:27017";
-
-// var options = {
-//     index: "myWebPage.html"
-//   };
-
-// var dir = path.join(__dirname, '../frontend');
-
-// app.get('/api', function(req, res){
-//     res.send("Yes we have an API now")
-// });
-
-// app.use("/api/quote", function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "http://127.0.0.1:3000"); // update to match the domain you will make the request from
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-//     next();
-//   });
-  
-
-// app.post('/api/quote', jsonParser, function(req, res){
-//     console.log("Storing quote number: "+req.body )
-//     console.log("Mongo URI is "+uri)
-
-//     // Database stuff
-//     // Create a new MongoClient
-//     const client = new MongoClient(uri);
-//     async function run() {
-//     try {
-//         console.log('Start the database stuff');
-//         //Write databse Insert/Update/Query code here..
-//         var dbo = client.db("mydb");
-//         await dbo.collection("quote").insertOne(req.body, function(err, res) {
-//             if (err) {
-//                 console.log(err); 
-//                 throw err;
-//             }
-//         }); 
-//         console.log('End the database stuff');
-
-//     } finally {
-//         // Ensures that the client will close when you finish/error
-//         await client.close();
-//     }
-//     }
-//     run().catch(console.dir);
-//     res.send("stored "+req.body)
-// });
-
-// app.get('/api/quote', function(req, res){
-//     console.log("getting the quotes")
-//     console.log("Mongo URI is "+uri)
-//     const client = new MongoClient(uri);
-//     async function run() {
-//         try {
-//             const dbo = client.db("mydb");
-//             const query = {};
-//             const options = {
-//                 sort: { todoNumber: 1  },
-//                 projection: { todoNumber: 1, todoText: 1 },
-//             };
-        
-//             const cursor = dbo.collection("quote").find(query);
-//             if ((await cursor.countDocuments) === 0) {
-//                 console.log("No documents found!");
-//                 response = ""
-//             }
-//             // prepare the response as an array
-//             const response = await cursor.toArray();
-//             res.send(response)
-//         } finally {
-//             await client.close();
-//         }
-//     }
-//     run().catch(console.dir);
-// });
-// app.delete('/api/quote', function(req, res){
-//     console.log("deleting the current quote")
-//     console.log("Mongo URI is "+uri)
-//     const client = new MongoClient(uri);
-//     async function run() {
-//         try {
-//             console.log("starting up the database")
-//             const dbo = client.db("mydb");
-//             const query = {};
-           
-//             console.log("deleting the collection")
-//             await dbo.collection("quote").deleteMany(query, function(err, result) {
-//                 if (err) throw err;
-//             });
- 
-//         } finally {
-//             await client.close();
-//         }
-//     }
-//     run().catch(console.dir);
-//     res.send("Deleted list")
-// });
-
-// app.use(express.static(dir, options));
-
-// // 404 page
-// app.use(function ( req, res, next) {
-//     res.send('This page does not exist!')
-// });
-
-app.get('/', (req, res) => res.send('Hello world!'));
-
-// use Routes
+// API
 app.use('/api/quotes', quotes);
-
-app.listen(8000, function () {
-    console.log('Listening on http://localhost:8000/');
-});
+app.use('/api/users', users);

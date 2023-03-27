@@ -26,6 +26,10 @@ const QuoteSchema = new mongoose.Schema({
     },
     cost: {
         type: Number
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 });
 
