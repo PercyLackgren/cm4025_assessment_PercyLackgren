@@ -5,8 +5,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Components
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
-import Blogs from "./pages/Blogs";
-import Contact from "./pages/Contact";
 import NoPage from "./pages/NoPage";
 import Quote from "./pages/Quote";
 import SignIn from "./pages/SignIn";
@@ -21,8 +19,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="blogs" element={<Blogs />} />
-          <Route path="contact" element={<Contact />} />
           <Route path="quote" element={<Quote />} />
           <Route path="signin" element={<SignIn />} />
           <Route path="*" element={<NoPage />} />

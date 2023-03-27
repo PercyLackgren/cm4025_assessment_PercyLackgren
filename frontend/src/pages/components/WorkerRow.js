@@ -1,0 +1,51 @@
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+
+function WorkerRow(props) {
+
+    const row = props.row;
+
+    if(row.type === "Employee") {
+      return (
+      
+        <tr>
+          <td width={"30%"}>
+            <select name='preset_rate' 
+              value={row.preset_rate} 
+              onChange={props.onChange}>
+                <option value="None">None</option>
+                <option value="Junior">Junior</option>
+                <option value="Standard">Standard</option>
+                <option value="Senior">Senior</option>
+              </select>
+          </td>
+          <td width={"30%"}>
+            <select name="cost_type" 
+              value={row.cost_type} 
+              onChange={props.onChange}
+              // Disable when a preset is selected
+              {...row.preset_rate === "None" ? {} : {disabled: true,  value: "preset"}}>
+                <option value="None">Select rate type</option>
+                <option value="Hourly">Hourly</option>
+                <option value="Daily">Daily</option>
+                <option hidden value="preset">Preset</option>
+              </select>
+          </td>
+          <td width={"30%"}>
+          <input name='cost'
+              type="number" 
+              value={row.cost}
+              placeholder="Enter cost"
+              onChange={props.onChange} 
+              // Disable when a preset is selected
+              {...row.preset_rate === "None" ? {} : {disabled: true, value: 0}}/>
+          </td>
+          <td width={"10%"}>
+            <Button variant="outline-danger" onClick={props.onDelete}>Remove</Button>
+          </td>
+        </tr>
+      );
+    }
+  }
+  
+  export default WorkerRow;

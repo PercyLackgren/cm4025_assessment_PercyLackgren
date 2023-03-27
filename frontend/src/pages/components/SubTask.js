@@ -1,6 +1,7 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
-import EmployeeForm from "./EmployeeForm"
-import ResourceForm from "./ResourceForm"
+import WorkerRow from './WorkerRow';
+import ResourceRow from './ResourceRow';
 
 function SubTask(props) {
 
@@ -12,33 +13,75 @@ function SubTask(props) {
     }
   })
 
+  var workerList = []
+  var resourceList = []
+
+  workerList = props.subTask.map((row, k) => 
+    <WorkerRow 
+      row={row} 
+      key={k} 
+      onChange={e => props.handleChange(k, row.sub_id, e)}
+      onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+    ></WorkerRow>
+  )
+  resourceList = props.subTask.map((row, k) => 
+    <ResourceRow 
+      row={row} 
+      key={k} 
+      onChange={e => props.handleChange(k, row.sub_id, e)}
+      onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+    ></ResourceRow>
+  )
+
   return (
-    <div style={{backgroundColor: "AntiqueWhite", margin:5, padding:5}}>
-        <Button onClick={props.addEmployee}>Add Employee</Button>
-        <Button onClick={props.addResource}>Add Resource</Button>
-        <Button onClick={props.onDelete}>Remove Task</Button>
-        <label>Sub Task Cost: £{subTaskCost}</label>
-        {props.subTask.map((quote, index) => {
-                if (quote.type === "Resource") {
-                    return <ResourceForm 
-                      desc={quote.desc}
-                      type={quote.type}
-                      cost_type={quote.cost_type} 
-                      cost={quote.cost} 
-                      onDelete={e => props.handleRemoveItem(index, quote.sub_id, e)}
-                      onChange={e => props.handleChange(index, quote.sub_id, e)}>
-                    </ResourceForm>
-                } else {
-                    return <EmployeeForm 
-                      type={quote.type} 
-                      preset_rate={quote.preset_rate}
-                      cost_type={quote.cost_type}
-                      cost={quote.cost} 
-                      onDelete={e => props.handleRemoveItem(index, quote.sub_id, e)}
-                      onChange={e => props.handleChange(index, quote.sub_id, e)}>
-                    </EmployeeForm>
-                }
-            })}
+    <div className='subtask'>
+      <div className="container"> 
+          <br/>
+          <div class="opposite">
+            <h2 className="heading--border">Sub Task {props.index + 1}</h2>
+            <h4>Sub Task Cost: £{subTaskCost}</h4>
+          </div>
+          <br/>
+          <div class="opposite">
+            <h4>Workers</h4>
+            <Button variant="primary" onClick={props.addEmployee}>Add Worker</Button>
+          </div>
+          <table>
+              <thead>
+                  <tr>
+                      <th>Preset</th>
+                      <th>Cost Type</th>
+                      <th>Cost</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {workerList}
+              </tbody>
+          </table>
+          <br/>
+          <div class="opposite">
+            <h4>Resources</h4>
+            <Button variant="primary" onClick={props.addResource}>Add Resource</Button>
+          </div>
+          <table>
+              <thead>
+                  <tr>
+                      <th>Description</th>
+                      <th>Cost Type</th>
+                      <th>Cost</th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {resourceList}
+              </tbody>
+          </table>
+          <br/>
+          <div class="center">
+            <Button variant="danger" onClick={props.onDelete}>Remove SubTask</Button>
+          </div>
+      </div>
     </div>
   );
 }

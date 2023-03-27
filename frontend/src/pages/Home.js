@@ -27,6 +27,8 @@ function Home() {
         quoteList = quotes.map((quote, k) => <QuoteRow quote={quote} key={k}></QuoteRow> )
     }
 
+    console.log(quoteList)
+
     return (
         <div>
             <div className="container"> 

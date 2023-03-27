@@ -50,3 +50,28 @@ table {
   height: 2px;
   background: linear-gradient(90deg,#ffffff 0,#ff5f42 23%,#8141FF);
 }
+
+.worker, .resource {
+  border-top: 2px solid rgb(173, 173, 173);
+}
+
+.type {
+  background-color: whitesmoke;
+  padding: 5px;
+}
+
+.subtask {
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+}
+
+.opposite {
+  display: flex; 
+  justify-content: space-between;
+}
+
+.center {
+  display: flex; 
+  justify-content: space-around;
+}

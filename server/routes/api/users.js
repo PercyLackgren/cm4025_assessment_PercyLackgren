@@ -24,7 +24,7 @@ router.post('/register', function (req, res) {
 })
 
 /*
-Login routes -- This is where we will use the 'local'
+Login route -- This is where we will use the 'local'
 passport authenciation strategy
 */
 router.post('/login', passport.authenticate('local'), (req, res, next) => {
@@ -32,6 +32,9 @@ router.post('/login', passport.authenticate('local'), (req, res, next) => {
   res.send(req.user.username)
 });
 
+/*
+Logout route
+*/
 router.post('/logout', function(req, res, next){
   if (req.user) {
     req.logout(function(err) {

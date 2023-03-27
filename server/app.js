@@ -48,26 +48,8 @@ passport.deserializeUser(User.deserializeUser());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.listen(8000, () => { console.log('Server started.') });
-
-// // use config
-// const config = require('config');
-// const db = config.get('mongoURI');
-
-
-
-// const passport = require('./passport/setup');
-
-// const app = express();
-
-// // why not
-// // app.disable('x-powered-by');
-
-// // connect to database
-// connectDB();
-
 // // Init Middleware
-// app.use(express.json({credentials: true, origin: "http://127.0.0.1:3000"}));
+app.use(express.json({credentials: true, origin: "http://127.0.0.1:3000"}));
 
 // Enable CORS for all routes
 const cors = require('cors');
@@ -83,3 +65,5 @@ const users = require('./routes/api/users');
 // API
 app.use('/api/quotes', quotes);
 app.use('/api/users', users);
+
+app.listen(8000, () => { console.log('Server started.') });

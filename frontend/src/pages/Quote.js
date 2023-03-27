@@ -134,23 +134,31 @@ const AddQuote = () => {
 
     return (
         <div>
-            <h1>Add Quote</h1>
-            <Button onClick={addSubTask}>Add Sub Task</Button>
-            <Button onClick={handleSubmit}>Submit</Button>
-            <Button onClick={getItems}>Pull From Database</Button>
-            <label>Total Cost: £{totalCost}</label>
-            {/* Display data */}
-            {data.map((quote, index) => {
-                return <SubTask 
-                addEmployee={e => addEmployee(index, e)}
-                addResource={e => addResource(index, e)}
-                handleRemove={handleRemove}
-                handleRemoveItem={handleRemoveItem}
-                handleChange={handleChange}
-                subTask={quote}
-                onDelete={e => handleRemove(index, e)}
-                ></SubTask>
-            })}
+            <div className="container"> 
+                <br/>
+                <h1 className="heading--border">Create Quote</h1>
+                <br/>
+                <Button onClick={addSubTask}>Add Sub Task</Button>
+                {/* <Button onClick={getItems}>Pull From Database</Button> */}
+                <label>Total Cost: £{totalCost}</label>
+                {/* Display data */}
+                {data.map((quote, index) => {
+                    return <SubTask 
+                    index={index}
+                    addEmployee={e => addEmployee(index, e)}
+                    addResource={e => addResource(index, e)}
+                    handleRemove={handleRemove}
+                    handleRemoveItem={handleRemoveItem}
+                    handleChange={handleChange}
+                    subTask={quote}
+                    onDelete={e => handleRemove(index, e)}
+                    ></SubTask>
+                })}
+                <div className='opposite'>
+                    <div/>
+                    <Button onClick={handleSubmit}>Submit</Button>
+                </div>
+            </div>
         </div> 
     )
   };
