@@ -75,3 +75,7 @@ table {
   display: flex; 
   justify-content: space-around;
 }
+
+.left-margin {
+  margin-left: 15px;
+}
