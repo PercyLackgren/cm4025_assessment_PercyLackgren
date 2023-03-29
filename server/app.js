@@ -11,7 +11,7 @@ const LocalStrategy = require('passport-local').Strategy;
 /*
   Include the user model for saving to MongoDB VIA mongoose
 */
-const User = require("./models/User");
+const User = require("./models/Users");
 
 /*
   Database connection -- We are using MongoDB for this tutorial
@@ -48,7 +48,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// // Init Middleware
+// Init Middleware
 app.use(express.json({credentials: true, origin: "http://127.0.0.1:3000"}));
 
 // Enable CORS for all routes
@@ -58,12 +58,12 @@ app.use(cors({
     credentials: true 
 }));
 
-// // routes const
+// API routes
 const quotes = require('./routes/api/quotes');
+const costs = require('./routes/api/costs');
 const users = require('./routes/api/users');
-
-// API
 app.use('/api/quotes', quotes);
+app.use('/api/costs', costs);
 app.use('/api/users', users);
 
 app.listen(8000, () => { console.log('Server started.') });

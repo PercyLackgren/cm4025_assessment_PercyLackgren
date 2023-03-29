@@ -2,30 +2,14 @@
 
 const mongoose = require('mongoose');
 
-const QuoteSchema = new mongoose.Schema({
+const QuotesSchema = new mongoose.Schema({
     user_id: {
-        type: Number,
-        required: true
-    },
-    sub_id: {
-        type: Number,
-        required: true
-    },
-    type: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
         required: true
     },
     description: {
         type: String,
-    },
-    preset_rate: {
-        type: String,
-    },
-    cost_type: {
-        type: String
-    },
-    cost: {
-        type: Number
     },
     date: {
         type: Date,
@@ -33,4 +17,6 @@ const QuoteSchema = new mongoose.Schema({
     }
 });
 
-module.exports = Quote = mongoose.model('quote', QuoteSchema);
+QuotesSchema.index({ _id: 1, id: 1}, { unique: true });
+
+module.exports = Quote = mongoose.model('quote', QuotesSchema);

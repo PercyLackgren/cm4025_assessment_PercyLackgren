@@ -37,12 +37,12 @@ function SubTask(props) {
     <div className='subtask'>
       <div className="container"> 
           <br/>
-          <div class="opposite">
+          <div className="opposite">
             <h2 className="heading--border">Sub Task {props.index + 1}</h2>
             <h4>Sub Task Cost: £{subTaskCost}</h4>
           </div>
           <br/>
-          <div class="opposite">
+          <div className="opposite">
             <h4>Workers</h4>
             <Button variant="primary" onClick={props.addEmployee}>Add Worker</Button>
           </div>
@@ -60,7 +60,7 @@ function SubTask(props) {
               </tbody>
           </table>
           <br/>
-          <div class="opposite">
+          <div className="opposite">
             <h4>Resources</h4>
             <Button variant="primary" onClick={props.addResource}>Add Resource</Button>
           </div>
@@ -78,7 +78,7 @@ function SubTask(props) {
               </tbody>
           </table>
           <br/>
-          <div class="center">
+          <div className="center">
             <Button variant="danger" onClick={props.onDelete}>Remove SubTask</Button>
           </div>
       </div>

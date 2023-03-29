@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
+const User = require("../../models/Users");
 /*
   Beyond this point is all system specific routes.
   All routes are here for simplicity of understanding the tutorial
@@ -11,7 +12,6 @@ router.post('/register', function (req, res) {
   console.log(req.body.username)
   User.register(
   new User({ 
-    email: req.body.email, 
     username: req.body.username 
   }), req.body.password, function (err, msg) {
     if (err) {

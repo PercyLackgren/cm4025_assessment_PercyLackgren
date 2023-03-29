@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import Button from 'react-bootstrap/Button';
 
 axios.defaults.withCredentials = true
 
@@ -14,7 +15,7 @@ function LogoutButton() {
   }
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <Button variant="primary" onClick={handleLogout}>Logout</Button>
   );
 }
 
