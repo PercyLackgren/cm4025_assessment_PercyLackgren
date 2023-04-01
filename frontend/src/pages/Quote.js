@@ -1,11 +1,15 @@
 import { useOutletContext } from "react-router-dom";
 import { useParams } from 'react-router-dom'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SubTask from "./components/SubTask"
-import Button from 'react-bootstrap/Button';
-
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom';
+
+// bootstrap
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
 const AddQuote = () => {
     
@@ -15,20 +19,65 @@ const AddQuote = () => {
     const authenticatedUser = useOutletContext();
 
     // Hold cost data
-    const [data, setData] = useState([
-    ]);
+    const [data, setData] = useState([]);
     
     // Hold parent quote
-    const [quote, setQuote] = useState('');
+    const [quote, setQuote] = useState({
+        description: undefined, 
+        timespan_type: undefined, 
+        timespan: '', 
+        user_id: undefined,
+        cost: ''
+    });
 
-    let handleQuoteChange = (e) => {
-        setQuote({
-            user_id: authenticatedUser.user._id,
-            description: e.target.value
-        })
+    // Use effect with empty array to only run once
+    useEffect(() => {
+        // Load quote from ID
+        if ( id === undefined) {
+            // Creating a new quote dont load anything
+        } else {
+            if (quote.description === undefined) {
+                axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
+                    setQuote(response.data)
+                    axios.get("http://127.0.0.1:8000/api/costs/quote/" + id).then((response) => {
+                        // console.log(response.data)
+                        // setData(response.data)
+                        
+                        const subArrays = splitArray(response.data);
+                        // console.log(subArrays)
+                        setData(subArrays)
+                    });
+                });
+            }
+        }
+    }, [])
+
+    // function to split arrays from database into separate subtask arrays
+    function splitArray(arr) {
+        const result = {};
+        
+        arr.forEach(item => {
+            const key = item.sub_id;
+            if (!result[key]) {
+            result[key] = [];
+            }
+            result[key].push(item);
+        });
+        
+        return Object.values(result);
     }
 
-    // When changes on form happen update the data in state
+    // Handle changes to the quote section
+    let handleQuoteChange = (e) => {
+        if(authenticatedUser !== null) {
+            console.log(authenticatedUser)
+            quote.user_id = authenticatedUser.user._id
+        }
+        const { name, value} = e.target;
+        setQuote({ ...quote, [name]: value });
+    }
+
+    // When changes on form happen update the state
     let handleCostChange = (index, sub_id, e) => {
         let newData = [...data];
         newData[sub_id][index][e.target.name] = e.target.value;
@@ -47,11 +96,12 @@ const AddQuote = () => {
     let addResource = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote_id: '',
+            quote_id: undefined,
             sub_id: i,
             type: 'Resource',
-            description: '',
-            cost_type: '',
+            description: undefined,
+            preset_rate: 'None',
+            cost_type: undefined,
             cost: ''
         })
         setData(newData)
@@ -61,11 +111,12 @@ const AddQuote = () => {
     let addEmployee = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote_id: '',
+            quote_id: undefined,
             sub_id: i,
             type: 'Employee',
+            description: undefined,
             preset_rate: 'None',
-            cost_type: '',
+            cost_type: undefined,
             cost: ''
         })
         setData(newData)
@@ -107,36 +158,44 @@ const AddQuote = () => {
     let storeItems = (data) => {
         // e.preventDefault();
         console.log("Storing items")
-        console.log(data)
-        // First, clear the old list in the database:
-        axios.post("http://127.0.0.1:8000/api/quotes", quote).then((response) => {
+        // console.log(data)
+
+        var updateUrl = ''
+        var method = 'post'
+
+        if (id !== '') {
+            updateUrl = '/' + id
+            method = 'put'
+        }
+    
+        axios({ method: method, 
+                url: "http://127.0.0.1:8000/api/quotes" + updateUrl, 
+                data: quote}).then((response) => {
             // Iterate through data object to parse subtasks
             data.forEach( subtask => {
                 // Iterate through subtasks to pull data for database
                 subtask.forEach( cost => {
                     // Send data as JSON
                     // set quote_id to newly generated id
-                    cost.quote_id = response.data.id
-                    axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
-                        console.log(response.status, response.data);
-                    });
+                    // If new 
+                    if(cost._id === '') {
+                        cost.quote_id = response.data.id
+                        axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
+                            console.log(response.status, response.data);
+                        });
+                        // Else update existing
+                    } else {
+                        axios.put("http://127.0.0.1:8000/api/costs/" + cost._id, cost).then((response) => {
+                            console.log(response.status, response.data);
+                        });
+                    }
                 })
             })
         })
     }
-
-    let getItems = (e) => {
-        console.log("Getting items")
-        e.preventDefault();
-        var tasks = "woop"
-        axios.get('http://127.0.0.1:8000/api/costs').then((response) => {
-            tasks = response.data;
-            console.log(tasks)
-            addSubTask(tasks)
-            });
-      }
     
-    
+    console.log(quote)
+    console.log(data)
 
     return (
         <div>
@@ -145,7 +204,46 @@ const AddQuote = () => {
                 <h1 className="heading--border">Create Quote</h1>
                 <br/>
 
-                <input onChange={handleQuoteChange}></input>
+                <Container>
+                    <Row>
+                        <Col>
+                            <Form.Control
+                                as="textarea"
+                                name="description"
+                                placeholder="Quote description"
+                                style={{ height: '100px' }}
+                                value={quote.description} 
+                                onChange={handleQuoteChange}
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col>
+                            <Form.Label>Timespan type</Form.Label>
+                            <Form.Select 
+                                aria-label="Default select example" 
+                                name="timespan_type"
+                                onChange={handleQuoteChange}
+                                value={quote.timespan_type} >
+                                    <option value="none"> Please select a timespan type</option>
+                                    <option value="days">Days</option>
+                                    <option value="weeks">Weeks</option>
+                                    <option value="months">Months</option>
+                            </Form.Select>
+                        </Col>
+                        <Col>
+                            <Form.Label>Timespan</Form.Label>
+                            <Form.Control 
+                                onChange={handleQuoteChange} 
+                                value={quote.timespan} 
+                                name="timespan"
+                                type="number" 
+                                min="1"
+                                placeholder="Enter timespan"
+                            />
+                        </Col>
+                    </Row>
+                </Container>
 
                 <br></br>
                 <br></br>
@@ -154,7 +252,7 @@ const AddQuote = () => {
                 {/* <Button onClick={getItems}>Pull From Database</Button> */}
                 <label>Total Cost: £{totalCost}</label>
                 {/* Display data */}
-                {data.map((cost, index, key) => {
+                {data.map((child, index) => {
                     return <SubTask 
                     index={index}
                     addEmployee={e => addEmployee(index, e)}
@@ -162,9 +260,9 @@ const AddQuote = () => {
                     handleRemove={handleRemove}
                     handleRemoveItem={handleRemoveItem}
                     handleChange={handleCostChange}
-                    subTask={cost}
+                    subTask={child}
                     onDelete={e => handleRemove(index, e)}
-                    key={key}
+                    key={index}
                     ></SubTask>
                 })}
                 <div className='opposite'>

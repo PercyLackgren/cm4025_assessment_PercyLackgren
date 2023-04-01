@@ -11,6 +11,15 @@ const QuotesSchema = new mongoose.Schema({
     description: {
         type: String,
     },
+    timespan_type: {
+        type: String,
+    },
+    timespan: {
+        type: Number,
+    },
+    cost: {
+        type: Number,
+    },
     date: {
         type: Date,
         default: Date.now

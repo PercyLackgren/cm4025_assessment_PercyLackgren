@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 function ResourceRow(props) {
 
@@ -9,7 +10,7 @@ function ResourceRow(props) {
       return (    
         <tr>
           <td width={"30%"}>
-            <input name='desc'
+            <input name='description'
               type="text" 
               value={row.desc}
               placeholder="Enter description"
@@ -18,16 +19,18 @@ function ResourceRow(props) {
           </td>
           <td width={"30%"}>          
             <select name="cost_type" 
-              value={row.cost_type} 
+              value={row.cost_type || ''} 
               onChange={props.onChange}>
               <option value="None">None</option>
+              <option value="otc">One time Cost</option>
               <option value="Weekly">Weekly</option>
               <option value="Monthly">Monthly</option>
             </select></td>
           <td width={"30%"}>
             <input name='cost'
-                type="number" 
-                value={row.cost}
+                type="number"
+                min="0" 
+                value={row.cost || ''}
                 placeholder="Enter cost"
                 onChange={props.onChange} 
                 />

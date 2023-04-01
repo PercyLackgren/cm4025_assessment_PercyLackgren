@@ -79,3 +79,7 @@ table {
 .left-margin {
   margin-left: 15px;
 }
+
+select {
+  padding: 4.5px;
+}

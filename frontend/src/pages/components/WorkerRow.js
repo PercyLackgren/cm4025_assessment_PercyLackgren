@@ -33,12 +33,13 @@ function WorkerRow(props) {
           </td>
           <td width={"30%"}>
           <input name='cost'
-              type="number" 
+              type="number"
+              min="0" 
               value={row.cost}
               placeholder="Enter cost"
               onChange={props.onChange} 
               // Disable when a preset is selected
-              {...row.preset_rate === "None" ? {} : {disabled: true, value: 0}}/>
+              {...row.preset_rate === "None" ? {} : {disabled: true, value: ''}}/>
           </td>
           <td width={"10%"}>
             <Button variant="outline-danger" onClick={props.onDelete}>Remove</Button>

@@ -23,6 +23,15 @@ router.get('/:id', (req, res) => {
     .catch(err => res.status(404).json({ noquotefound: 'No cost found' }));
 });
 
+// @route GET api/costs/quote/:id
+// @description Get single cost by id
+// @access Public
+router.get('/quote/:id', (req, res) => {
+  costs.find({quote_id: req.params.id})
+    .then(costs => res.json(costs))
+    .catch(err => res.status(404).json({ noquotefound: 'No cost found' }));
+});
+
 // @route POST api/costs
 // @description add/save cost
 // @access Public
