@@ -163,7 +163,9 @@ const AddQuote = () => {
         var updateUrl = ''
         var method = 'post'
 
-        if (id !== '') {
+        console.log(id)
+
+        if (id !== undefined) {
             updateUrl = '/' + id
             method = 'put'
         }
@@ -178,7 +180,7 @@ const AddQuote = () => {
                     // Send data as JSON
                     // set quote_id to newly generated id
                     // If new 
-                    if(cost._id === '') {
+                    if(cost._id === undefined) {
                         cost.quote_id = response.data.id
                         axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
                             console.log(response.status, response.data);
