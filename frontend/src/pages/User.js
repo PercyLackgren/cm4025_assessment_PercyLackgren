@@ -1,6 +1,6 @@
 
 import { useOutletContext } from "react-router-dom";
-import Login from "./components/Login"
+import Login from './components/Login';
 import Logout from './components/Logout';
 
 function SignUpLoginForm(props) {

@@ -1,64 +1,79 @@
-// routes/api/quotes.js
+// routes/api/quote.js
 const express = require('express');
 const router = express.Router();
 
 // Load quote model
-const quotes = require('../../models/quotes');
+const quote = require('../../models/Quote');
 
-// @route GET api/quotes
-// @description Get all quotes
+// @route GET api/quote
+// @description Get all quote
 // @access Public
 router.get('/', (req, res) => {
-  quotes.find()
-    .then(quotes => res.json(quotes))
-    .catch(err => res.status(404).json({ noquotesfound: 'No quotes found' }));
+  quote.find()
+    .then(quote => res.json(quote))
+    .catch(err => res.status(404).json({ noquotesfound: 'No quote found' }));
 });
 
-// @route GET api/quotes/:id
+// @route GET api/quote/:id
 // @description Get single quote by id
 // @access Public
 router.get('/:id', (req, res) => {
-  quotes.findById(req.params.id)
-    .then(quotes => res.json(quotes))
+  quote.findById(req.params.id).populate({path: 'user_id', select: 'username'})
+    .then(quote => res.json(quote))
     .catch(err => res.status(404).json({ noquotefound: 'No quote found' }));
 });
 
-// @route POST api/quotes
+// @route POST api/quote
 // @description add/save quote
 // @access Public
 router.post('/', (req, res) => {
-  quotes.create(req.body)
-    .then(quotes => res.json({ msg: 'quote added successfully', id: quotes._id }))
-    .catch(err => res.status(400).json({ error: 'Unable to add this quote' }));
+  if (req.user !== undefined) {
+    quote.create(req.body)
+      .then(quote => res.json({ msg: 'quote added successfully', id: quote._id }))
+      .catch(err => res.status(400).json({ error: 'Unable to add this quote' }));
+  }
 });
 
-// @route PUT api/quotes/:id
+// @route PUT api/quote/:id
 // @description Update quote
 // @access Public
 router.put('/:id', (req, res) => {
-  quotes.findByIdAndUpdate(req.params.id, req.body)
-    .then(quotes => res.json({ msg: 'Updated successfully' }))
-    .catch(err =>
-      res.status(400).json({ error: 'Unable to update the Database' })
-    );
+  if (req.user !== undefined) {
+    quote.findById(req.params.id)
+      .then( element => {
+        if (req.user._id.toString() === element.user_id.toString() || req.user.admin) {
+          quote.findByIdAndUpdate(req.params.id, req.body)
+            .then(quote => res.json({ msg: 'Updated successfully', id: quote._id }))
+            .catch(err => res.status(400).json({ error: 'Unable to update the Database' }));
+        }
+      })
+  }
 });
 
-// @route DELETE api/quotes/:id
+// @route DELETE api/quote/:id
 // @description Delete quote by id
 // @access Public
 router.delete('/:id', (req, res) => {
-  quotes.findByIdAndRemove(req.params.id, req.body)
-    .then(quotes => res.json({ mgs: 'quote entry deleted successfully' }))
-    .catch(err => res.status(404).json({ error: 'No such quote' }));
+  if (req.user !== undefined) {
+    quote.findById(req.params.id)
+      .then( element => {
+        if (req.user._id.toString() === element.user_id.toString() || req.user.admin) {
+          quote.findByIdAndRemove(req.params.id, req.body)
+            .then(quote => res.json({ mgs: 'quote entry deleted successfully' }))
+            .catch(err => res.status(404).json({ error: 'No such quote' }));
+        }
+      })
+  }
 });
 
-// @route DELETE api/quotes/
-// @description Delete all quotes TEMP FUNCTION
+// @route DELETE api/quote/
+// @description Delete all quote TEMP FUNCTION
 // @access Public
-router.delete('/', (req, res) => {
-  quotes.deleteMany(req.params.id, req.body)
-    .then(quotes => res.json({ mgs: 'quotes deleted successfully' }))
-    .catch(err => res.status(404).json({ error: 'No such quotes' }));
-});
+// router.delete('/', (req, res) => {
+//   console.log(req)
+//   quote.deleteMany(req.params.id, req.body)
+//     .then(quote => res.json({ mgs: 'quote deleted successfully' }))
+//     .catch(err => res.status(404).json({ error: 'No such quote' }));
+// });
 
 module.exports = router;

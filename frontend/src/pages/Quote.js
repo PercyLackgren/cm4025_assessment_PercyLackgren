@@ -15,7 +15,10 @@ const AddQuote = () => {
     
     const { id } = useParams()
 
+    const [readOnly, setReadOnly] = useState(false)
+
     // Grab user data if any
+    
     const authenticatedUser = useOutletContext();
 
     // Hold cost data
@@ -27,30 +30,62 @@ const AddQuote = () => {
         timespan_type: undefined, 
         timespan: '', 
         user_id: undefined,
-        cost: ''
+        cost: '',
+        username: undefined
     });
 
-    // Use effect with empty array to only run once
-    useEffect(() => {
-        // Load quote from ID
-        if ( id === undefined) {
-            // Creating a new quote dont load anything
-        } else {
-            if (quote.description === undefined) {
-                axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
-                    setQuote(response.data)
-                    axios.get("http://127.0.0.1:8000/api/costs/quote/" + id).then((response) => {
-                        // console.log(response.data)
-                        // setData(response.data)
-                        
-                        const subArrays = splitArray(response.data);
-                        // console.log(subArrays)
-                        setData(subArrays)
-                    });
+    // Create a list to keep track of costs to delete
+    const [deleteList, setDeletelist] = useState([])
+
+    // Load quote and costs
+    if ( id === undefined) {
+        // Creating a new quote dont load anything
+    } else {
+        if (quote.description === undefined) {
+            axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
+                setQuote({ ...response.data, username: response.data.user_id.username });
+                axios.get("http://127.0.0.1:8000/api/costs/quote/" + id).then((response) => {
+                    // console.log(response.data)
+                    // setData(response.data)
+                    
+                    const subArrays = splitArray(response.data);
+                    // console.log(subArrays)
+                    setData(subArrays)
                 });
-            }
+            });
         }
-    }, [])
+    }
+
+    // // Use effect with empty array to only run once
+    // useEffect(() => {
+    //     checkAuthentication()
+    // }, [])
+
+    // async function checkAuthentication() {
+    //     try {
+    //         const response = await axios.get('http://127.0.0.1:8000/api/users/profile');
+    //         // setAuthenticatedUser(response.data);
+    //         console.log("Response: " + response.data.user._id);
+    //         // console.log("Quote: " + quote.timespan);
+    //         if (response.data.user !== undefined) {
+    //             console.log("Getting here?")
+    //             // console.log(response.data)
+    //             // If user is owner or admin set readonly to false
+    //             if (response.data.user._id === quote.user_id._id || response.data.user.admin) {
+    //                 console.log("Matching credentials")
+    //                 setReadOnly(false)
+    //             }  
+    //             if (id === undefined) {
+    //                 console.log("New quote")
+    //                 setReadOnly(false)
+    //             }
+    //         // If new
+    //         }  
+
+    //     } catch (error) {
+    //         // console.log(error.response.data);
+    //     }
+    // }
 
     // function to split arrays from database into separate subtask arrays
     function splitArray(arr) {
@@ -70,11 +105,12 @@ const AddQuote = () => {
     // Handle changes to the quote section
     let handleQuoteChange = (e) => {
         if(authenticatedUser !== null) {
-            console.log(authenticatedUser)
+            // console.log(authenticatedUser)
             quote.user_id = authenticatedUser.user._id
         }
         const { name, value} = e.target;
         setQuote({ ...quote, [name]: value });
+        // console.log(quote)
     }
 
     // When changes on form happen update the state
@@ -96,7 +132,7 @@ const AddQuote = () => {
     let addResource = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote_id: undefined,
+            quote: undefined,
             sub_id: i,
             type: 'Resource',
             description: undefined,
@@ -111,7 +147,7 @@ const AddQuote = () => {
     let addEmployee = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote_id: undefined,
+            quote: undefined,
             sub_id: i,
             type: 'Employee',
             description: undefined,
@@ -125,6 +161,15 @@ const AddQuote = () => {
     // Remove subtask when clicked
     let handleRemove = (i) => {
         let newData = [...data]
+        
+        // Save the _ids of all subtask costs when removing to delete from database.
+        if (newData[i][1] !== undefined) {
+            let newDeleteList = [...deleteList]
+            newData[i].forEach((cost) => {
+                newDeleteList.push(cost._id)
+            })
+            setDeletelist(newDeleteList)
+        }
         newData.splice(i,1)
         setData(newData)
     }
@@ -132,6 +177,10 @@ const AddQuote = () => {
     // Remove item when clicked
     let handleRemoveItem = (i, sub_id) => {
         let newData = [...data]
+        // Save _id of cost when removing
+        if(newData[sub_id][i]._id !== undefined) {
+            setDeletelist([...deleteList, newData[sub_id][i]._id])
+        }
         newData[sub_id].splice(i,1)
         setData(newData)
     }
@@ -151,23 +200,24 @@ const AddQuote = () => {
         event.preventDefault();
         // alert(JSON.stringify(data))
         // console.log(data)
-        storeItems(data)
+        storeItems(data, event)
     }
 
     // Store current page to database
-    let storeItems = (data) => {
-        // e.preventDefault();
+    let storeItems = (data, event) => {
         console.log("Storing items")
-        // console.log(data)
+        console.log(data)
 
         var updateUrl = ''
         var method = 'post'
 
-        console.log(id)
-
         if (id !== undefined) {
             updateUrl = '/' + id
-            method = 'put'
+            if(event.target.name === "remove") {
+                method = 'delete'
+            } else {
+                method = 'put'
+            }
         }
     
         axios({ method: method, 
@@ -177,34 +227,52 @@ const AddQuote = () => {
             data.forEach( subtask => {
                 // Iterate through subtasks to pull data for database
                 subtask.forEach( cost => {
-                    // Send data as JSON
-                    // set quote_id to newly generated id
-                    // If new 
-                    if(cost._id === undefined) {
-                        cost.quote_id = response.data.id
-                        axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
-                            console.log(response.status, response.data);
+                    // If deleting quote
+                    if(event.target.name === "remove") { 
+                        axios.delete("http://127.0.0.1:8000/api/costs/" + cost._id).then((response) => {
+                            console.log(response.msg, response.data);
                         });
-                        // Else update existing
                     } else {
-                        axios.put("http://127.0.0.1:8000/api/costs/" + cost._id, cost).then((response) => {
-                            console.log(response.status, response.data);
-                        });
+                        // When saving or updating a quote
+                        if(cost._id === undefined) {
+                            // If new 
+                            // console.log(response)
+                            // set quote to newly generated id
+                            cost.quote = response.data.id
+                            axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
+                                console.log(response.msg, response.data);
+                            });
+                            
+                        } else {
+                            // Else update existing
+                            axios.put("http://127.0.0.1:8000/api/costs/" + cost._id, cost).then((response) => {
+                                console.log(response.msg, response.data);
+                            });
+                        }
                     }
                 })
             })
         })
+
+        // If any costs are on the delete list and no longer in the state, remove them from the database
+        deleteList.forEach((id) => {
+            axios.delete("http://127.0.0.1:8000/api/costs/" + id).then((response) => {
+                console.log(response.status, response.data);
+            });
+        })
+        setDeletelist([])
     }
     
-    console.log(quote)
-    console.log(data)
+    // console.log(quote)
+    // console.log(data)
+    // console.log(deleteList)
 
     return (
         <div>
             <div className="container"> 
                 <br/>
-                <h1 className="heading--border">Create Quote</h1>
-                <br/>
+                <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
+                <p>Author: {quote.username}</p>
 
                 <Container>
                     <Row>
@@ -216,6 +284,7 @@ const AddQuote = () => {
                                 style={{ height: '100px' }}
                                 value={quote.description} 
                                 onChange={handleQuoteChange}
+                                disabled={readOnly}
                             />
                         </Col>
                     </Row>
@@ -226,7 +295,8 @@ const AddQuote = () => {
                                 aria-label="Default select example" 
                                 name="timespan_type"
                                 onChange={handleQuoteChange}
-                                value={quote.timespan_type} >
+                                value={quote.timespan_type} 
+                                disabled={readOnly}>
                                     <option value="none"> Please select a timespan type</option>
                                     <option value="days">Days</option>
                                     <option value="weeks">Weeks</option>
@@ -242,6 +312,7 @@ const AddQuote = () => {
                                 type="number" 
                                 min="1"
                                 placeholder="Enter timespan"
+                                disabled={readOnly}
                             />
                         </Col>
                     </Row>
@@ -250,7 +321,7 @@ const AddQuote = () => {
                 <br></br>
                 <br></br>
 
-                <Button onClick={addSubTask}>Add Sub Task</Button>
+                <Button onClick={addSubTask} hidden={readOnly}>Add Sub Task</Button>
                 {/* <Button onClick={getItems}>Pull From Database</Button> */}
                 <label>Total Cost: £{totalCost}</label>
                 {/* Display data */}
@@ -264,12 +335,16 @@ const AddQuote = () => {
                     handleChange={handleCostChange}
                     subTask={child}
                     onDelete={e => handleRemove(index, e)}
+                    readOnly={readOnly}
                     key={index}
                     ></SubTask>
                 })}
                 <div className='opposite'>
                     <div/>
-                    <Button onClick={handleSubmit}>Submit</Button>
+                    <div>
+                    {id ? <Button hidden={readOnly} name="remove" variant="danger" onClick={handleSubmit}>Remove Quote</Button>: ""}
+                    <Button hidden={readOnly} id="save" onClick={handleSubmit} className="left-margin">{id ? "Save Quote" : "Submit Quote"}</Button>
+                    </div>
                 </div>
             </div>
         </div> 

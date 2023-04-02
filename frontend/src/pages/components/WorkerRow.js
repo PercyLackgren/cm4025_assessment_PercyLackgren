@@ -12,7 +12,8 @@ function WorkerRow(props) {
           <td width={"30%"}>
             <select name='preset_rate' 
               value={row.preset_rate} 
-              onChange={props.onChange}>
+              onChange={props.onChange}
+              disabled={props.readOnly}>
                 <option value="None">None</option>
                 <option value="Junior">Junior</option>
                 <option value="Standard">Standard</option>
@@ -23,6 +24,7 @@ function WorkerRow(props) {
             <select name="cost_type" 
               value={row.cost_type} 
               onChange={props.onChange}
+              disabled={props.readOnly}
               // Disable when a preset is selected
               {...row.preset_rate === "None" ? {} : {disabled: true,  value: "preset"}}>
                 <option value="None">Select rate type</option>
@@ -38,11 +40,12 @@ function WorkerRow(props) {
               value={row.cost}
               placeholder="Enter cost"
               onChange={props.onChange} 
+              disabled={props.readOnly}
               // Disable when a preset is selected
               {...row.preset_rate === "None" ? {} : {disabled: true, value: ''}}/>
           </td>
           <td width={"10%"}>
-            <Button variant="outline-danger" onClick={props.onDelete}>Remove</Button>
+            <Button variant="outline-danger" onClick={props.onDelete} hidden={props.readOnly}>Remove</Button>
           </td>
         </tr>
       );

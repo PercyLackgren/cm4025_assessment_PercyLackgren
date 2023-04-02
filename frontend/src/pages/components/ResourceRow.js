@@ -12,17 +12,19 @@ function ResourceRow(props) {
           <td width={"30%"}>
             <input name='description'
               type="text" 
-              value={row.desc}
+              value={row.description}
               placeholder="Enter description"
               onChange={props.onChange} 
+              disabled={props.readOnly}
               />
           </td>
           <td width={"30%"}>          
             <select name="cost_type" 
               value={row.cost_type || ''} 
-              onChange={props.onChange}>
+              onChange={props.onChange}
+              disabled={props.readOnly}>
               <option value="None">None</option>
-              <option value="otc">One time Cost</option>
+              <option value="otc">One Off</option>
               <option value="Weekly">Weekly</option>
               <option value="Monthly">Monthly</option>
             </select></td>
@@ -32,11 +34,12 @@ function ResourceRow(props) {
                 min="0" 
                 value={row.cost || ''}
                 placeholder="Enter cost"
-                onChange={props.onChange} 
+                onChange={props.onChange}
+                disabled={props.readOnly} 
                 />
           </td>
           <td width={"10%"}>
-            <Button variant="outline-danger" onClick={props.onDelete}>Remove</Button>
+            <Button variant="outline-danger" onClick={props.onDelete} hidden={props.readOnly}>Remove</Button>
           </td>
         </tr>
       );

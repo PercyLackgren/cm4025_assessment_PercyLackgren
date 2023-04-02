@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const QuotesSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
+        ref: "User",
         required: true
     },
     description: {
@@ -28,4 +28,4 @@ const QuotesSchema = new mongoose.Schema({
 
 QuotesSchema.index({ _id: 1, id: 1}, { unique: true });
 
-module.exports = Quote = mongoose.model('quote', QuotesSchema);
+module.exports = Quote = mongoose.model('Quote', QuotesSchema);

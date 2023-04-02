@@ -22,6 +22,7 @@ function SubTask(props) {
       key={k} 
       onChange={e => props.handleChange(k, row.sub_id, e)}
       onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+      readOnly={props.readOnly}
     ></WorkerRow>
   )
   resourceList = props.subTask.map((row, k) => 
@@ -30,6 +31,7 @@ function SubTask(props) {
       key={k} 
       onChange={e => props.handleChange(k, row.sub_id, e)}
       onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+      readOnly={props.readOnly}
     ></ResourceRow>
   )
 
@@ -44,7 +46,7 @@ function SubTask(props) {
           <br/>
           <div className="opposite">
             <h4>Workers</h4>
-            <Button variant="primary" onClick={props.addEmployee}>Add Worker</Button>
+            <Button variant="primary" onClick={props.addEmployee} hidden={props.readOnly}>Add Worker</Button>
           </div>
           <table>
               <thead>
@@ -62,7 +64,7 @@ function SubTask(props) {
           <br/>
           <div className="opposite">
             <h4>Resources</h4>
-            <Button variant="primary" onClick={props.addResource}>Add Resource</Button>
+            <Button variant="primary" onClick={props.addResource} hidden={props.readOnly}>Add Resource</Button>
           </div>
           <table>
               <thead>
@@ -79,7 +81,7 @@ function SubTask(props) {
           </table>
           <br/>
           <div className="center">
-            <Button variant="danger" onClick={props.onDelete}>Remove SubTask</Button>
+            <Button variant="danger" onClick={props.onDelete} hidden={props.readOnly}>Remove SubTask</Button>
           </div>
       </div>
     </div>

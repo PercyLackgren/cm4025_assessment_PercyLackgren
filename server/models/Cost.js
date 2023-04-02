@@ -1,11 +1,11 @@
-// models/Quote.js
+// models/Cost.js
 
 const mongoose = require('mongoose');
 
 const CostsSchema = new mongoose.Schema({
-    quote_id: {
+    quote: {
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "Quotes",
+        ref: "Quote",
         required: true
     },
     sub_id: {
@@ -33,4 +33,4 @@ const CostsSchema = new mongoose.Schema({
 
 CostsSchema.index({ _id: 1, id: 1}, { unique: true });
 
-module.exports = Cost = mongoose.model('cost', CostsSchema);
+module.exports = Cost = mongoose.model('Cost', CostsSchema);

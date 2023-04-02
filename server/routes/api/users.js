@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const User = require("../../models/Users");
+const User = require("../../models/User");
 /*
   Beyond this point is all system specific routes.
   All routes are here for simplicity of understanding the tutorial

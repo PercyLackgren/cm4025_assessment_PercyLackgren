@@ -26,6 +26,7 @@ function Layout() {
     checkAuthentication();
   }, []);
 
+  // console.log(authenticatedUser)
   
   return (
     <>
@@ -36,7 +37,9 @@ function Layout() {
             <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/quote">Create Quote</Nav.Link>
           </Nav>
-          <Button href="/user" variant="outline-primary" className="justify-content-end">Sign in</Button>
+          <Button href="/user" variant="outline-primary" className="justify-content-end">
+            {authenticatedUser ? "My Account" : "Sign in"}
+          </Button>
         </Container>
       </Navbar>
 
