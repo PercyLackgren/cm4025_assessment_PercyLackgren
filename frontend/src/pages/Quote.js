@@ -4,38 +4,99 @@ import { useState, useEffect } from 'react';
 import SubTask from "./components/SubTask"
 import axios from 'axios'
 
-// bootstrap
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+// Form validation
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as yup from 'yup';
 
 const AddQuote = () => {
     
+    // Get the id of existing quote
     const { id } = useParams()
 
-    const [readOnly, setReadOnly] = useState(false)
+    // store readonly field
+    const [readOnly, setReadOnly] = useState(true)
 
-    // Grab user data if any
-    
+    // Grab user data
     const authenticatedUser = useOutletContext();
-
-    // Hold cost data
-    const [data, setData] = useState([]);
     
     // Hold parent quote
     const [quote, setQuote] = useState({
         description: undefined, 
         timespan_type: undefined, 
-        timespan: '', 
+        timespan: undefined, 
         user_id: undefined,
         cost: '',
         username: undefined
     });
 
+    // Yup validation of the quote
+    const quoteSchema = yup.object().shape({
+        description: yup
+            .string()
+            .required(),
+        timespan_type: yup
+            .string()
+            .notOneOf(['none'], 'Please select a timespan type')
+            .required(),
+        timespan: yup
+            .number()
+            .typeError('Timespan must be a number')
+            .required(),
+        // Other fields not user accessible
+      });
+
+    // Hold quote validation errors
+    const [errors, setErrors] = useState({});
+
+    // Hold cost data
+    const [data, setData] = useState([]);
+
+    // Yup validation of costs data
+    const costSchema = yup.object().shape({
+        type: yup
+            .string()
+            .required(),
+        description: yup
+            .string()
+            .when('type', {
+                is: 'Resource',
+                then: () => yup
+                    .string()
+                    .required(),
+            }),
+        preset_rate: yup
+            .string()
+            .when('type', {
+                is: 'Employee',
+                then: () => yup
+                    .string()
+                    .notOneOf(['None'], 'Please select a preset rate')
+                    .required(),
+                }),
+        cost_type: yup
+            .string()
+            .notOneOf(['none'], 'Please select a cost type')
+            .required(),
+        cost: yup
+            .number()
+            .typeError('Cost must be a number')
+            .required(),
+    })
+
+    const arrayOfCostsSchema = yup.array().of(yup.array().of(costSchema));
+
+    // Hold costs data validation errors
+    const [costErrors, setCostErrors] = useState([]);
+
+    // Trigger for cost validation
+    const [trigger, setTrigger] = useState(0);
+
     // Create a list to keep track of costs to delete
     const [deleteList, setDeletelist] = useState([])
+
+    // Hold data for form validation
+    const [formErrors, setFormErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Load quote and costs
     if ( id === undefined) {
@@ -56,36 +117,30 @@ const AddQuote = () => {
         }
     }
 
-    // // Use effect with empty array to only run once
-    // useEffect(() => {
-    //     checkAuthentication()
-    // }, [])
+    // Check if user is authorized to edit quote
+    useEffect(() => {
+        checkAuthentication()
+    }, [authenticatedUser, quote])
 
-    // async function checkAuthentication() {
-    //     try {
-    //         const response = await axios.get('http://127.0.0.1:8000/api/users/profile');
-    //         // setAuthenticatedUser(response.data);
-    //         console.log("Response: " + response.data.user._id);
-    //         // console.log("Quote: " + quote.timespan);
-    //         if (response.data.user !== undefined) {
-    //             console.log("Getting here?")
-    //             // console.log(response.data)
-    //             // If user is owner or admin set readonly to false
-    //             if (response.data.user._id === quote.user_id._id || response.data.user.admin) {
-    //                 console.log("Matching credentials")
-    //                 setReadOnly(false)
-    //             }  
-    //             if (id === undefined) {
-    //                 console.log("New quote")
-    //                 setReadOnly(false)
-    //             }
-    //         // If new
-    //         }  
-
-    //     } catch (error) {
-    //         // console.log(error.response.data);
-    //     }
-    // }
+    async function checkAuthentication() {
+        // Check logged in, no login no access
+        if (authenticatedUser !== null) {
+            // check if new quote
+            if (quote.user_id !== undefined) {
+                // if not new, check if current user is owner or an admin
+                if (authenticatedUser.user._id === quote.user_id._id || authenticatedUser.user.admin) {
+                    // console.log("Matching credentials")
+                    // allow access
+                    setReadOnly(false)
+                } 
+                // If a user is logged in and creating a new quote 
+            } else if (id === undefined) {
+                // console.log("New quote")
+                // allow access
+                setReadOnly(false)
+            }
+        } 
+    }
 
     // function to split arrays from database into separate subtask arrays
     function splitArray(arr) {
@@ -132,7 +187,7 @@ const AddQuote = () => {
     let addResource = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote: undefined,
+            quote: '',
             sub_id: i,
             type: 'Resource',
             description: undefined,
@@ -147,7 +202,7 @@ const AddQuote = () => {
     let addEmployee = (i) => {
         let newData = [...data]
         newData[i].push({
-            quote: undefined,
+            quote: '',
             sub_id: i,
             type: 'Employee',
             description: undefined,
@@ -196,21 +251,55 @@ const AddQuote = () => {
     })
 
     // Alert output for data, for testing, submit to API once final
-    let handleSubmit = (event) => {
-        event.preventDefault();
-        // alert(JSON.stringify(data))
+    let handleSubmit = () => {
+
+        // console.log(costSchema.describe());
+
         // console.log(data)
-        storeItems(data, event)
+        setTrigger((trigger) => trigger + 1);
+        quoteSchema
+            .validate(quote, {abortEarly: false})
+            .then((validQuote) => {
+                // Reset errors
+                setErrors({});
+                // Manage validation of costs
+                console.log(data)
+                // arrayOfCostsSchema
+                //     .validate(data, {abortEarly: false})
+                //     .then((validData) => {
+                //         setCostErrors({});
+                //         console.log(validData)
+                //     })
+                //     .catch((err) => {
+                //         const errors = {};
+                //         err.inner.forEach((e) => {
+                //             errors[e.path] = e.message;
+                //         });
+                //         setCostErrors(errors);
+                //         console.log(costErrors)
+                //     })
+                // Handle valid quote
+            })
+            .catch((err) => {
+                const errors = {};
+                err.inner.forEach((e) => {
+                    errors[e.path] = e.message;
+                });
+                setErrors(errors);
+            });
+        // storeItems(data, event)
     }
 
     // Store current page to database
     let storeItems = (data, event) => {
         console.log("Storing items")
-        console.log(data)
+        // console.log(data)
 
+        // Setup the axios fields, by defualt posting a new quote
         var updateUrl = ''
         var method = 'post'
 
+        // Setup updating or deleting
         if (id !== undefined) {
             updateUrl = '/' + id
             if(event.target.name === "remove") {
@@ -219,7 +308,7 @@ const AddQuote = () => {
                 method = 'put'
             }
         }
-    
+
         axios({ method: method, 
                 url: "http://127.0.0.1:8000/api/quotes" + updateUrl, 
                 data: quote}).then((response) => {
@@ -260,6 +349,7 @@ const AddQuote = () => {
                 console.log(response.status, response.data);
             });
         })
+        // reset delete list
         setDeletelist([])
     }
     
@@ -268,17 +358,17 @@ const AddQuote = () => {
     // console.log(deleteList)
 
     return (
-        <div>
-            <div className="container"> 
-                <br/>
-                <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
-                <p>Author: {quote.username}</p>
-
-                <Container>
-                    <Row>
-                        <Col>
-                            <Form.Control
-                                as="textarea"
+        <div className="container"> 
+            <br/>
+            <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
+            {quote.username ? <p>Author: {quote.username}</p> : ''}
+            <table>
+                <tbody>
+                    <tr>
+                        <td colSpan={2}>
+                        <label>Description</label>
+                            <textarea 
+                                className="width-100"
                                 name="description"
                                 placeholder="Quote description"
                                 style={{ height: '100px' }}
@@ -286,13 +376,14 @@ const AddQuote = () => {
                                 onChange={handleQuoteChange}
                                 disabled={readOnly}
                             />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <Form.Label>Timespan type</Form.Label>
-                            <Form.Select 
-                                aria-label="Default select example" 
+                            {errors.description && <span className="error">{errors.description}</span>}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Timespan type</label>
+                            <select 
+                                className="width-100"
                                 name="timespan_type"
                                 onChange={handleQuoteChange}
                                 value={quote.timespan_type} 
@@ -301,12 +392,15 @@ const AddQuote = () => {
                                     <option value="days">Days</option>
                                     <option value="weeks">Weeks</option>
                                     <option value="months">Months</option>
-                            </Form.Select>
-                        </Col>
-                        <Col>
-                            <Form.Label>Timespan</Form.Label>
-                            <Form.Control 
+                            </select>
+                            {errors.timespan_type && <span className="error">{errors.timespan_type}</span>}
+                        </td>
+                        <td>
+                            <label>Timespan</label>
+                            <br></br>
+                            <input
                                 onChange={handleQuoteChange} 
+                                className="width-100"
                                 value={quote.timespan} 
                                 name="timespan"
                                 type="number" 
@@ -314,40 +408,54 @@ const AddQuote = () => {
                                 placeholder="Enter timespan"
                                 disabled={readOnly}
                             />
-                        </Col>
-                    </Row>
-                </Container>
+                            {errors.timespan && <span className="error">{errors.timespan}</span>}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-                <br></br>
-                <br></br>
+            <br></br>
+            <br></br>
 
-                <Button onClick={addSubTask} hidden={readOnly}>Add Sub Task</Button>
-                {/* <Button onClick={getItems}>Pull From Database</Button> */}
-                <label>Total Cost: £{totalCost}</label>
-                {/* Display data */}
-                {data.map((child, index) => {
-                    return <SubTask 
-                    index={index}
-                    addEmployee={e => addEmployee(index, e)}
-                    addResource={e => addResource(index, e)}
-                    handleRemove={handleRemove}
-                    handleRemoveItem={handleRemoveItem}
-                    handleChange={handleCostChange}
-                    subTask={child}
-                    onDelete={e => handleRemove(index, e)}
-                    readOnly={readOnly}
-                    key={index}
-                    ></SubTask>
-                })}
-                <div className='opposite'>
-                    <div/>
-                    <div>
-                    {id ? <Button hidden={readOnly} name="remove" variant="danger" onClick={handleSubmit}>Remove Quote</Button>: ""}
-                    <Button hidden={readOnly} id="save" onClick={handleSubmit} className="left-margin">{id ? "Save Quote" : "Submit Quote"}</Button>
-                    </div>
+            <button onClick={addSubTask} hidden={readOnly}>Add Sub Task</button>
+            <label>Total Cost: £{totalCost}</label>
+            {/* Display data */}
+            {data.map((child, index) => {
+                return <SubTask 
+                index={index}
+                addEmployee={e => addEmployee(index, e)}
+                addResource={e => addResource(index, e)}
+                handleRemove={handleRemove}
+                handleRemoveItem={handleRemoveItem}
+                handleChange={handleCostChange}
+                subTask={child}
+                onDelete={e => handleRemove(index, e)}
+                readOnly={readOnly}
+                errors={costErrors}
+                key={index}
+                trigger={trigger}
+                ></SubTask>
+            })}
+            <div className='opposite'>
+                <div/>
+                <div>
+                    {id ? 
+                    <button 
+                        hidden={readOnly} 
+                        name="remove" 
+                        onClick={handleSubmit}
+                    >Remove Quote</button>
+                    : ""}
+                    <button 
+                        hidden={readOnly} 
+                        id="save" 
+                        onClick={handleSubmit} 
+                        className="left-margin">
+                        {id ? "Save Quote" : "Submit Quote"}
+                    </button>
                 </div>
             </div>
-        </div> 
+        </div>
     )
   };
   

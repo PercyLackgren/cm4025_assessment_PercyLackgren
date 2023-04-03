@@ -7,7 +7,7 @@ function quoteRow(props) {
 
     return (
       
-      <tr>
+      <tr className='tr-quote'>
         <td>{quote.user_id}</td>
         <td>{quote.description}</td>
         {/* <td>{quote.sub_id}</td>

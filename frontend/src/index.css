@@ -16,11 +16,11 @@ code {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
-tr {
+.tr-quote {
   border-bottom: solid 1px !important;
 }
 
-tr:hover {
+.tr-quote:hover {
   background-color: whitesmoke;
   transition: 0.3s;
 }
@@ -82,4 +82,25 @@ table {
 
 select {
   padding: 4.5px;
+}
+
+.width-100 {
+  width: 100%;
+}
+
+button {
+  border: none;
+  padding: 5px 20px;
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: rgb(224, 224, 224);
+  transition: 0.3s;
+}
+
+.error {
+  color: red;
 }

@@ -16,6 +16,8 @@ function SubTask(props) {
   var workerList = []
   var resourceList = []
 
+  var errors = props.errors[props.sub_id]
+
   workerList = props.subTask.map((row, k) => 
     <WorkerRow 
       row={row} 
@@ -23,6 +25,7 @@ function SubTask(props) {
       onChange={e => props.handleChange(k, row.sub_id, e)}
       onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
       readOnly={props.readOnly}
+      trigger={props.trigger}
     ></WorkerRow>
   )
   resourceList = props.subTask.map((row, k) => 
@@ -32,6 +35,7 @@ function SubTask(props) {
       onChange={e => props.handleChange(k, row.sub_id, e)}
       onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
       readOnly={props.readOnly}
+      trigger={props.trigger}
     ></ResourceRow>
   )
 

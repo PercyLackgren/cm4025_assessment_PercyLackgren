@@ -22,12 +22,12 @@ function Home() {
     var quoteList
 
     if(quotes.length === 0) {
-        console.log('No quotes')
+        // console.log('No quotes')
     } else {
         quoteList = quotes.map((quote, k) => <QuoteRow quote={quote} key={k}></QuoteRow> )
     }
 
-    console.log(quoteList)
+    // console.log(quoteList)
 
     return (
         <div>
@@ -37,7 +37,7 @@ function Home() {
                 <br/>
                 <table>
                     <thead>
-                        <tr>
+                        <tr className='tr-quote'>
                             <th>Author</th>
                             <th>description</th>
                             {/* <th>Subtasks</th>
