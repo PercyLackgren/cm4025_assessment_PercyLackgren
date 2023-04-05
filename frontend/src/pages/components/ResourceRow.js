@@ -43,6 +43,7 @@ function ResourceRow(props) {
       if (props.trigger) {
         handleValidation()
       }
+      props.handleErrors(row.sub_id, Object.keys(errors).length)
     }
 
 

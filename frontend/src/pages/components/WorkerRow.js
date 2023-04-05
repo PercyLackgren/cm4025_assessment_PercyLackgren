@@ -10,7 +10,7 @@ function WorkerRow(props) {
     const [errors, setErrors] = useState({});
 
     const resourceRowSchema = yup.object().shape({
-      preset_rate: yup.string().notOneOf(['None'], 'Please select a preset rate').required('preset rate is required'),
+      preset_rate: yup.string().required('preset rate is required'),
       cost_type: yup.string().notOneOf(['None'], 'Please select a cost type').required('Cost type is required'),
       cost: yup.number().typeError('Cost must be a number').required('Cost is required').positive('Cost must be a positive number'),
     });

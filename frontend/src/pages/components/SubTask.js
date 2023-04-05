@@ -5,18 +5,8 @@ import ResourceRow from './ResourceRow';
 
 function SubTask(props) {
 
-  // Calcualte subtask cost, parsing text to number looks jank
-  var subTaskCost = 0
-  props.subTask.map((quote) => {
-    if(Number.isInteger(parseInt(quote.cost))) {
-      subTaskCost += parseInt(quote.cost)
-    }
-  })
-
   var workerList = []
   var resourceList = []
-
-  var errors = props.errors[props.sub_id]
 
   workerList = props.subTask.map((row, k) => 
     <WorkerRow 
@@ -45,7 +35,7 @@ function SubTask(props) {
           <br/>
           <div className="opposite">
             <h2 className="heading--border">Sub Task {props.index + 1}</h2>
-            <h4>Sub Task Cost: £{subTaskCost}</h4>
+            {props.cost ? <h4>Sub Task Cost: £{props.cost}</h4> : ""}
           </div>
           <br/>
           <div className="opposite">

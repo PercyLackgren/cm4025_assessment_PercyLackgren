@@ -51,52 +51,14 @@ const AddQuote = () => {
     // Hold cost data
     const [data, setData] = useState([]);
 
-    // Yup validation of costs data
-    const costSchema = yup.object().shape({
-        type: yup
-            .string()
-            .required(),
-        description: yup
-            .string()
-            .when('type', {
-                is: 'Resource',
-                then: () => yup
-                    .string()
-                    .required(),
-            }),
-        preset_rate: yup
-            .string()
-            .when('type', {
-                is: 'Employee',
-                then: () => yup
-                    .string()
-                    .notOneOf(['None'], 'Please select a preset rate')
-                    .required(),
-                }),
-        cost_type: yup
-            .string()
-            .notOneOf(['none'], 'Please select a cost type')
-            .required(),
-        cost: yup
-            .number()
-            .typeError('Cost must be a number')
-            .required(),
-    })
-
-    const arrayOfCostsSchema = yup.array().of(yup.array().of(costSchema));
-
-    // Hold costs data validation errors
-    const [costErrors, setCostErrors] = useState([]);
-
     // Trigger for cost validation
     const [trigger, setTrigger] = useState(0);
 
     // Create a list to keep track of costs to delete
     const [deleteList, setDeletelist] = useState([])
 
-    // Hold data for form validation
-    const [formErrors, setFormErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Hold subtasks costs
+    const [subtaskCosts, setSubtaskCosts] = useState([])
 
     // Load quote and costs
     if ( id === undefined) {
@@ -105,13 +67,34 @@ const AddQuote = () => {
         if (quote.description === undefined) {
             axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
                 setQuote({ ...response.data, username: response.data.user_id.username });
+
+                // calculate total number of days for quote
+                var days = 0
+                switch (response.data.timespan_type) {
+                    case "days": 
+                        days = response.data.timespan; 
+                        break;
+                    case "weeks": 
+                        days = response.data.timespan*7; 
+                        break;
+                    case "months": 
+                        days = response.data.timespan*28; 
+                        break;
+                }
+
                 axios.get("http://127.0.0.1:8000/api/costs/quote/" + id).then((response) => {
                     // console.log(response.data)
                     // setData(response.data)
                     
-                    const subArrays = splitArray(response.data);
-                    // console.log(subArrays)
+                    const subArrays = splitArray(response.data.data);
                     setData(subArrays)
+
+                    // Use days to convert resulting monthly cost from db
+                    var costData = response.data.costs
+                    costData = costData.map(function(element) {
+                        return Math.trunc(element/28*days);
+                    });
+                    setSubtaskCosts(costData)
                 });
             });
         }
@@ -139,7 +122,7 @@ const AddQuote = () => {
                 // allow access
                 setReadOnly(false)
             }
-        } 
+        }
     }
 
     // function to split arrays from database into separate subtask arrays
@@ -240,45 +223,19 @@ const AddQuote = () => {
         setData(newData)
     }
 
-    // calculate total cost for display, FUDGELESS
-    var totalCost = 0
-    data.forEach((subTask) => {
-        subTask.forEach((cost) => {
-            if(Number.isInteger(parseInt(cost.cost))) {
-                totalCost += parseInt(cost.cost)
-            }
-        })
-    })
-
     // Alert output for data, for testing, submit to API once final
-    let handleSubmit = () => {
+    let handleSubmit = (event) => {
 
         // console.log(costSchema.describe());
 
         // console.log(data)
-        setTrigger((trigger) => trigger + 1);
+        setTrigger((trigger) => 1);
         quoteSchema
             .validate(quote, {abortEarly: false})
             .then((validQuote) => {
                 // Reset errors
                 setErrors({});
-                // Manage validation of costs
-                console.log(data)
-                // arrayOfCostsSchema
-                //     .validate(data, {abortEarly: false})
-                //     .then((validData) => {
-                //         setCostErrors({});
-                //         console.log(validData)
-                //     })
-                //     .catch((err) => {
-                //         const errors = {};
-                //         err.inner.forEach((e) => {
-                //             errors[e.path] = e.message;
-                //         });
-                //         setCostErrors(errors);
-                //         console.log(costErrors)
-                //     })
-                // Handle valid quote
+                storeItems(data, event)
             })
             .catch((err) => {
                 const errors = {};
@@ -287,7 +244,6 @@ const AddQuote = () => {
                 });
                 setErrors(errors);
             });
-        // storeItems(data, event)
     }
 
     // Store current page to database
@@ -360,7 +316,10 @@ const AddQuote = () => {
     return (
         <div className="container"> 
             <br/>
-            <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
+            <div className="opposite">
+                <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
+                {quote.cost ? <h4>Total Cost: £{quote.cost}</h4> : ""}
+            </div>
             {quote.username ? <p>Author: {quote.username}</p> : ''}
             <table>
                 <tbody>
@@ -418,7 +377,6 @@ const AddQuote = () => {
             <br></br>
 
             <button onClick={addSubTask} hidden={readOnly}>Add Sub Task</button>
-            <label>Total Cost: £{totalCost}</label>
             {/* Display data */}
             {data.map((child, index) => {
                 return <SubTask 
@@ -431,9 +389,9 @@ const AddQuote = () => {
                 subTask={child}
                 onDelete={e => handleRemove(index, e)}
                 readOnly={readOnly}
-                errors={costErrors}
                 key={index}
                 trigger={trigger}
+                cost={subtaskCosts[index]}
                 ></SubTask>
             })}
             <div className='opposite'>

@@ -28,7 +28,7 @@ const quote = require('../../models/Quote')
 // @description Get cost by quote id
 // @access Public
 router.get('/quote/:id', (req, res) => {
-  cost.find({quote: req.params.id}).populate({path: 'quote', select: 'user_id'})
+  cost.find({quote: req.params.id}).populate({path: 'quote', select: 'user_id fudge'})
     .then(cost => {
       // By default cannot see costs
       let hideData = true
@@ -45,6 +45,9 @@ router.get('/quote/:id', (req, res) => {
         hideData = false
       }
 
+      // calculate total costs before nulling data
+      var subCosts = calculateSubTaskCost(cost);
+
       // Remove costs if user not permitted
       cost.forEach( element => {
         if (hideData) {
@@ -53,7 +56,10 @@ router.get('/quote/:id', (req, res) => {
       })
       
       // respond with costs
-      res.json(cost)
+      res.json({
+        data: cost,
+        costs: subCosts
+      })
     })
     .catch(err => res.status(404).json({ noquotefound: 'No cost found' }));
 });
@@ -122,5 +128,53 @@ router.delete('/:id', (req, res) => {
 //     .then(cost => res.json({ mgs: 'cost deleted successfully' }))
 //     .catch(err => res.status(404).json({ error: 'No such cost' }));
 // });
+
+function calculateSubTaskCost(cost, fudge) {
+  
+  // calculate costs for one month, 4 weeks per month with 5 working days of 8 hours
+  var subTaskCosts = []
+
+  cost.forEach( element => {
+    if (subTaskCosts[element.sub_id] === undefined) {
+      subTaskCosts[element.sub_id] = 0
+    }
+
+    if(element.type === 'Employee') {  
+      switch(element.cost_type) {
+        case "Hourly":
+          subTaskCosts[element.sub_id] += (4*5*8*element.cost);
+          break;
+        case "Daily":
+          subTaskCosts[element.sub_id] += (4*5*element.cost);
+          break;
+      }
+    } else {
+      switch(element.cost_type) {
+        case "One Off":
+          subTaskCosts[element.sub_id] += element.cost;
+          break;
+        case "Weekly":
+          subTaskCosts[element.sub_id] += 4*element.cost;
+          break;
+        case "Monthly":
+          subTaskCosts[element.sub_id] += element.cost;
+          break;
+      }
+    }
+  })
+
+  // if fudge is below zero, double it.
+  var fudge = cost[0].quote.fudge
+  if (fudge < 1) {
+    fudge = fudge*2
+  }
+
+  // apply fudge to subtask costs.
+  subTaskCosts = subTaskCosts.map(function(element) {
+    return element * fudge;
+  });
+
+  return subTaskCosts
+}
 
 module.exports = router;

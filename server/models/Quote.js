@@ -20,6 +20,10 @@ const QuotesSchema = new mongoose.Schema({
     cost: {
         type: Number,
     },
+    fudge: {
+        type: Number,
+        default: 0.5 + Math.random(),
+    },
     date: {
         type: Date,
         default: Date.now
