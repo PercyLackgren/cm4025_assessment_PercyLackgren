@@ -59,6 +59,7 @@ const AddQuote = () => {
 
     // Hold subtasks costs
     const [subtaskCosts, setSubtaskCosts] = useState([])
+    const [fudgelessCosts, setFudgelessCosts] = useState([])
 
     // Load quote and costs
     if ( id === undefined) {
@@ -68,7 +69,7 @@ const AddQuote = () => {
             axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
                 setQuote({ ...response.data, username: response.data.user_id.username });
 
-                // calculate total number of days for quote
+                // calculate total number of days of loaded quote
                 var days = 0
                 switch (response.data.timespan_type) {
                     case "days": 
@@ -92,9 +93,30 @@ const AddQuote = () => {
                     // Use days to convert resulting monthly cost from db
                     var costData = response.data.costs
                     costData = costData.map(function(element) {
-                        return Math.trunc(element/28*days);
+                        return element/28*days;
                     });
+
+                    const costSum = costData.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue;
+                    }, 0);     
+                    costData.unshift(costSum)
+
                     setSubtaskCosts(costData)
+
+                    // get admin fudgelesss
+                    var fudgeless = response.data.fudgeless
+                    fudgeless = fudgeless.map(function(element) {
+                        return element/28*days;
+                    });
+
+                    const fudgelessSum = fudgeless.reduce((accumulator, currentValue) => {
+                        return accumulator + currentValue;
+                    }, 0);     
+                    fudgeless.unshift(fudgelessSum)
+
+                    setFudgelessCosts(fudgeless)
+
+                    // setQuote(response.data.quote);
                 });
             });
         }
@@ -318,7 +340,11 @@ const AddQuote = () => {
             <br/>
             <div className="opposite">
                 <h1 className="heading--border">{id ? "Edit Quote" : "Create Quote"}</h1>
-                {quote.cost ? <h4>Total Cost: £{quote.cost}</h4> : ""}
+                {subtaskCosts[0] ? 
+                    fudgelessCosts[0] ? 
+                      <h4>Total Cost: £{Math.round(subtaskCosts[0])}{"("+Math.round(fudgelessCosts[0])+")"}</h4> 
+                    : <h4>Total Cost: £{Math.round(subtaskCosts[0])}</h4> 
+                : ""}
             </div>
             {quote.username ? <p>Author: {quote.username}</p> : ''}
             <table>
@@ -391,7 +417,8 @@ const AddQuote = () => {
                 readOnly={readOnly}
                 key={index}
                 trigger={trigger}
-                cost={subtaskCosts[index]}
+                cost={subtaskCosts[index+1]}
+                fudgeless={fudgelessCosts[index+1]}
                 ></SubTask>
             })}
             <div className='opposite'>
