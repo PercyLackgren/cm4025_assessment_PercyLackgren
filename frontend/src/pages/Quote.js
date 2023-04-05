@@ -23,7 +23,7 @@ const AddQuote = () => {
     const [quote, setQuote] = useState({
         description: undefined, 
         timespan_type: undefined, 
-        timespan: undefined, 
+        timespan: 0, 
         user_id: undefined,
         cost: '',
         username: undefined
@@ -40,6 +40,7 @@ const AddQuote = () => {
             .required(),
         timespan: yup
             .number()
+            .min(1)
             .typeError('Timespan must be a number')
             .required(),
         // Other fields not user accessible
@@ -60,6 +61,9 @@ const AddQuote = () => {
     // Hold subtasks costs
     const [subtaskCosts, setSubtaskCosts] = useState([])
     const [fudgelessCosts, setFudgelessCosts] = useState([])
+
+    // Hold dropdown list of rates to pass to WorkerRow
+    const [presetRates, setPresetRates] = useState('')
 
     // Load quote and costs
     if ( id === undefined) {
@@ -96,6 +100,7 @@ const AddQuote = () => {
                         return element/28*days;
                     });
 
+                    // Calculate the total cost
                     const costSum = costData.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue;
                     }, 0);     
@@ -105,18 +110,18 @@ const AddQuote = () => {
 
                     // get admin fudgelesss
                     var fudgeless = response.data.fudgeless
-                    fudgeless = fudgeless.map(function(element) {
-                        return element/28*days;
-                    });
+                    if (fudgeless) {
+                        fudgeless = fudgeless.map(function(element) {
+                            return element/28*days;
+                        });
 
-                    const fudgelessSum = fudgeless.reduce((accumulator, currentValue) => {
-                        return accumulator + currentValue;
-                    }, 0);     
-                    fudgeless.unshift(fudgelessSum)
+                        const fudgelessSum = fudgeless.reduce((accumulator, currentValue) => {
+                            return accumulator + currentValue;
+                        }, 0);     
+                        fudgeless.unshift(fudgelessSum)
 
-                    setFudgelessCosts(fudgeless)
-
-                    // setQuote(response.data.quote);
+                        setFudgelessCosts(fudgeless)
+                    }
                 });
             });
         }
@@ -162,6 +167,13 @@ const AddQuote = () => {
         return Object.values(result);
     }
 
+
+    if(!presetRates) {
+        axios.get("http://127.0.0.1:8000/api/dropdowns/field/" + "preset_rate").then((response) => {
+            setPresetRates(response.data)
+        })
+    }
+
     // Handle changes to the quote section
     let handleQuoteChange = (e) => {
         if(authenticatedUser !== null) {
@@ -195,7 +207,7 @@ const AddQuote = () => {
             quote: '',
             sub_id: i,
             type: 'Resource',
-            description: undefined,
+            description: '',
             preset_rate: 'None',
             cost_type: undefined,
             cost: ''
@@ -413,6 +425,7 @@ const AddQuote = () => {
                 handleRemoveItem={handleRemoveItem}
                 handleChange={handleCostChange}
                 subTask={child}
+                presetRates={presetRates}
                 onDelete={e => handleRemove(index, e)}
                 readOnly={readOnly}
                 key={index}

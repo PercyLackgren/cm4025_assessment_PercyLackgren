@@ -31,6 +31,4 @@ const CostsSchema = new mongoose.Schema({
     }
 });
 
-CostsSchema.index({ _id: 1, id: 1}, { unique: true });
-
 module.exports = Cost = mongoose.model('Cost', CostsSchema);

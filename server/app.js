@@ -62,8 +62,10 @@ app.use(cors({
 const quotes = require('./routes/api/quotes');
 const costs = require('./routes/api/costs');
 const users = require('./routes/api/users');
+const dropdowns = require('./routes/api/dropdowns');
 app.use('/api/quotes', quotes);
 app.use('/api/costs', costs);
 app.use('/api/users', users);
+app.use('/api/dropdowns', dropdowns);
 
 app.listen(8000, () => { console.log('Server started.') });

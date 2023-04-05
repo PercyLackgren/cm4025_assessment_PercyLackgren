@@ -2,6 +2,7 @@
 import { useOutletContext } from "react-router-dom";
 import Login from './components/Login';
 import Logout from './components/Logout';
+import Dropdowns from "./components/Dropdowns";
 
 function SignUpLoginForm(props) {
 
@@ -18,6 +19,11 @@ function SignUpLoginForm(props) {
                         "Sign In / Register"
                     )}
                 </h1>
+                <br/>
+                {/* Show admin panel */}
+                {authenticatedUser ? (
+                    authenticatedUser.user.admin ?  <Dropdowns/> : "no"
+                ) : ""}
                 <br/>
                 {authenticatedUser ? (
                     <Logout />

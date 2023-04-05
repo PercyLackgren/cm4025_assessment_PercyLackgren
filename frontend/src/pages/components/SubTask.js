@@ -11,6 +11,7 @@ function SubTask(props) {
   workerList = props.subTask.map((row, k) => 
     <WorkerRow 
       row={row} 
+      presetRates={props.presetRates}
       key={k} 
       onChange={e => props.handleChange(k, row.sub_id, e)}
       onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
@@ -51,7 +52,7 @@ function SubTask(props) {
                   <tr>
                       <th>Preset</th>
                       <th>Cost Type</th>
-                      <th>Cost</th>
+                      <th>£ Cost</th>
                       <th></th>
                   </tr>
               </thead>
@@ -69,7 +70,7 @@ function SubTask(props) {
                   <tr>
                       <th>Description</th>
                       <th>Cost Type</th>
-                      <th>Cost</th>
+                      <th>£ Cost</th>
                       <th></th>
                   </tr>
               </thead>

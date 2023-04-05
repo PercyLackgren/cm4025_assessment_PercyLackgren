@@ -45,6 +45,13 @@ function WorkerRow(props) {
       }
     }
 
+    // Load preset rates into options.
+    const options = props.presetRates.map((dropdown) => (
+      <option key={dropdown._id} value={dropdown.value}>
+        {dropdown.name}
+      </option>
+    )).reverse();
+
     if(row.type === "Employee") {
       return (
       
@@ -54,10 +61,7 @@ function WorkerRow(props) {
               value={row.preset_rate} 
               onChange={onChange}
               disabled={props.readOnly}>
-                <option value="None">None</option>
-                <option value="Junior">Junior</option>
-                <option value="Standard">Standard</option>
-                <option value="Senior">Senior</option>
+                {options}
             </select>
             <br/>
             {errors.preset_rate && <span className="error">{errors.preset_rate}</span>}
@@ -68,7 +72,7 @@ function WorkerRow(props) {
               onChange={onChange}
               disabled={props.readOnly}
               // Disable when a preset is selected
-              {...row.preset_rate === "None" ? {} : {disabled: true,  value: "preset"}}>
+              {...row.preset_rate === "None" ? {} : {disabled: true,  value: "Daily"}}>
                 <option value="None">Select rate type</option>
                 <option value="Hourly">Hourly</option>
                 <option value="Daily">Daily</option>
@@ -78,17 +82,17 @@ function WorkerRow(props) {
             {errors.cost_type && <span className="error">{errors.cost_type}</span>}
           </td>
           <td width={"30%"}>
-          <input name='cost'
-              type="number"
-              min="0" 
-              value={row.cost}
-              placeholder="Enter cost"
-              onChange={onChange} 
-              disabled={props.readOnly}
-              // Disable when a preset is selected
-              {...row.preset_rate === "None" ? {} : {disabled: true, value: ''}}/>
-              <br/>
-              {errors.cost && <span className="error">{errors.cost}</span>}
+            <input name='cost'
+                type="number"
+                min="0" 
+                value={row.cost}
+                placeholder="Enter cost"
+                onChange={onChange} 
+                disabled={props.readOnly}
+                // Disable when a preset is selected
+                {...row.preset_rate === "None" ? {} : {disabled: true, value: row.preset_rate}}/>
+                <br/>
+                {errors.cost && <span className="error">{errors.cost}</span>}
           </td>
           <td width={"10%"}>
             <Button variant="outline-danger" onClick={props.onDelete} hidden={props.readOnly}>Remove</Button>
