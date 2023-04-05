@@ -9,7 +9,7 @@ const quote = require('../../models/Quote');
 // @description Get all quote
 // @access Public
 router.get('/', (req, res) => {
-  quote.find()
+  quote.find().select("-fudge")
     .then(quote => res.json(quote))
     .catch(err => res.status(404).json({ noquotesfound: 'No quote found' }));
 });

@@ -40,8 +40,8 @@ function Home() {
                         <tr className='tr-quote'>
                             <th>Author</th>
                             <th>description</th>
-                            {/* <th>Subtasks</th>
-                            <th>Quote</th> */}
+                            {/* <th>Subtasks</th> */}
+                            <th>Quote</th>
                             <th></th>
                         </tr>
                     </thead>

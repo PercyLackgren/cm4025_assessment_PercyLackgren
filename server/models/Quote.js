@@ -22,7 +22,7 @@ const QuotesSchema = new mongoose.Schema({
     },
     fudge: {
         type: Number,
-        default: 0.5 + Math.random(),
+        default: 0.9 + (0.3 * Math.random()), // scale of 0.9 - 1.2
     },
     date: {
         type: Date,

@@ -35,7 +35,11 @@ function SubTask(props) {
           <br/>
           <div className="opposite">
             <h2 className="heading--border">Sub Task {props.index + 1}</h2>
-            {props.cost ? <h4>Sub Task Cost: £{props.cost}</h4> : ""}
+            {props.cost ? 
+              props.fudgeless ? 
+                <h4>Sub Task Cost: £{Math.round(props.cost)}{"("+Math.round(props.fudgeless)+")"}</h4> 
+              : <h4>Sub Task Cost: £{Math.round(props.cost)}</h4> 
+            : ""}
           </div>
           <br/>
           <div className="opposite">
