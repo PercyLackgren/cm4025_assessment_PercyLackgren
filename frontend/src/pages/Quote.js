@@ -341,6 +341,9 @@ const AddQuote = () => {
         })
         // reset delete list
         setDeletelist([])
+
+        // Refresh page
+        // window.location.reload(); 
     }
     
     // console.log(quote)

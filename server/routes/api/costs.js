@@ -6,24 +6,6 @@ const router = express.Router();
 const cost = require('../../models/Cost');
 const quote = require('../../models/Quote')
 
-// @route GET api/cost
-// @description Get all cost
-// @access Public
-// router.get('/', (req, res) => {
-//   cost.find()
-//     .then(cost => res.json(cost))
-//     .catch(err => res.status(404).json({ noquotesfound: 'No cost found' }));
-// });
-
-// @route GET api/cost/:id
-// @description Get single cost by id
-// @access Public
-// router.get('/:id', (req, res) => {
-//   cost.findById(req.params.id)
-//     .then(cost => res.json(cost))
-//     .catch(err => res.status(404).json({ noquotefound: 'No cost found' }));
-// });
-
 // @route GET api/cost/quote/:id
 // @description Get cost by quote id
 // @access Public
@@ -146,15 +128,7 @@ router.delete('/:id', (req, res) => {
     })
 });
 
-// @route DELETE api/cost/
-// @description Delete all cost TEMP FUNCTION
-// @access Public
-// router.delete('/', (req, res) => {
-//   cost.deleteMany(req.params.id, req.body)
-//     .then(cost => res.json({ mgs: 'cost deleted successfully' }))
-//     .catch(err => res.status(404).json({ error: 'No such cost' }));
-// });
-
+// TODO otc is not calculated correctly ree
 
 // Function to generate subtask costs, fudge and fudgeless
 function calculateSubTaskCost(cost, admin) {

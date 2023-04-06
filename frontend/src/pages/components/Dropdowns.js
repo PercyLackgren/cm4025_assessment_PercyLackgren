@@ -49,10 +49,11 @@ const Dropdowns = ({ field }) => {
 
   return (
     <div>
+      <br/>
         <h2 className="heading--border">Manage Employee Preset Rates</h2>
         <table>
             <thead>
-            <tr>
+            <tr className='tr-quote'>
                 <th>Name</th>
                 <th>Value</th>
                 <th>Actions</th>
@@ -60,7 +61,7 @@ const Dropdowns = ({ field }) => {
             </thead>
             <tbody>
             {dropdowns.map((dropdown, index) => (
-                <tr key={dropdown._id}>
+                <tr key={dropdown._id} className='tr-quote'>
                 <td>
                     <input
                     type="text"

@@ -4,6 +4,7 @@ const router = express.Router();
 
 // Load quote model
 const quote = require('../../models/Quote');
+const Quote = require('../../models/Quote');
 
 // @route GET api/quote
 // @description Get all quote
@@ -66,14 +67,130 @@ router.delete('/:id', (req, res) => {
   }
 });
 
-// @route DELETE api/quote/
-// @description Delete all quote TEMP FUNCTION
+// @route GET api/quotes/user_id/:user_id 
+// @description get quote by user id field
 // @access Public
-// router.delete('/', (req, res) => {
-//   console.log(req)
-//   quote.deleteMany(req.params.id, req.body)
-//     .then(quote => res.json({ mgs: 'quote deleted successfully' }))
-//     .catch(err => res.status(404).json({ error: 'No such quote' }));
+router.get('/user_id/:user_id', (req, res) => {
+  console.log(req.params.user_id)
+  Quote.find({ user_id: req.params.user_id })
+    .then((quote) => {
+      if (quote.length === 0) {
+          res.status(404).json({ error: 'No matching quotes found' });
+      } else {
+          res.json(quote);
+    }
+    })
+    .catch((err) => {
+        res.status(500).json({ error: err.message });
+    });
+});
+
+// // Route to combine multiple quotes by id
+// router.post('/combine', async (req, res) => {
+//   try {
+//     const quoteIds = req.body.quoteIds; // Array of quote ids to combine
+
+//     // Find all quotes with the given ids
+//     const quotes = await Quote.find({ _id: { $in: quoteIds } });
+
+//     // Calculate total cost and timespan for the combined quotes
+//     let totalCost = 0;
+//     let totalTimespan = 0;
+//     let combinedDescription = '';
+//     quotes.forEach(quote => {
+//       totalCost += quote.cost * quote.fudge;
+//       if (quote.timespan_type === 'days') {
+//         totalTimespan += quote.timespan;
+//       } else if (quote.timespan_type === 'weeks') {
+//         totalTimespan += quote.timespan * 5;
+//       } else if (quote.timespan_type === 'months') {
+//         totalTimespan += quote.timespan * 28;
+//       }
+//       combinedDescription += quote.description + ' '; // concatenate descriptions
+//     });
+
+//     // Create a new combined quote
+//     const newQuote = new Quote({
+//       user_id: req.user.id,
+//       description: 'Combined quote',
+//       timespan_type: 'days',
+//       timespan: totalTimespan,
+//       cost: totalCost
+//     });
+
+//     // Save the new quote to the database
+//     await newQuote.save();
+
+//     // Delete the original quotes
+//     await Quote.deleteMany({ _id: { $in: quoteIds } });
+
+//     res.json({ success: true, quote: newQuote });
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server Error');
+//   }
 // });
+
+// Route to combine quotes and update the associated costs
+router.post('/combine', async (req, res) => {
+  try {
+    const quote_ids = req.body;
+    const combinedQuote = new Quote({ user_id: req.user._id });
+
+    // setup some helper variables
+    let description = '';
+    let buffer = 0
+    let max_sub_id = 0
+    let last_quote_id = ''
+
+    for (const quote_id of quote_ids) {
+      const quote = await Quote.findById(quote_id);
+      if (!quote) {
+        return res.status(404).json({ msg: `Quote ${quote_id} not found` });
+      }
+
+      // Concatenate the descriptions of all the quotes
+      description += '\n' + quote.description;
+      // cost += quote.cost;
+
+      // Update the quote_id field in the associated Cost documents
+      const costs = await Cost.find({ quote: quote_id });
+      for (const cost of costs) {
+
+        if (cost.quote !== last_quote_id) {
+          last_quote_id = cost.quote
+          buffer = max_sub_id
+        }
+
+        cost.sub_id = cost.sub_id+buffer
+        max_sub_id = cost.sub_id+1
+
+        cost.quote = combinedQuote._id;
+        await cost.save();
+      }
+
+      // Delete old quote
+      Quote.findByIdAndRemove(quote_id)
+        .then(quote => (console.log("quote entry deleted successfully")))
+        .catch(err => (console.log("No such quote")));
+    }
+
+    // get rid of leading line break and spaces https://stackoverflow.com/a/14572494
+    description = description.replace(/^\n|\n$/g, '');
+    combinedQuote.description = description;
+    combinedQuote.timespan = 1
+    combinedQuote.timespan_type = 'months'
+
+    console.log(description)
+    console.log(combinedQuote)
+    await combinedQuote.save();
+
+    res.json({ success: true, combinedQuote });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 
 module.exports = router;

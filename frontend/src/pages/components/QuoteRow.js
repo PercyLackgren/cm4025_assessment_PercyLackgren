@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom'
 
-function quoteRow(props) {
+function QuoteRow(props) {
 
     const quote = props.quote;
 
@@ -31,4 +31,4 @@ function quoteRow(props) {
     );
   }
   
-  export default quoteRow;
+  export default QuoteRow;

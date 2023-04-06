@@ -42,7 +42,6 @@ router.delete('/:id', (req, res) => {
 // @description get dropdowns by field by ChatGPT
 // @access Public
 router.get('/field/:field', (req, res) => {
-    console.log(req.params.field)
     Dropdown.find({ field: req.params.field })
     .then((dropdowns) => {
     if (dropdowns.length === 0) {

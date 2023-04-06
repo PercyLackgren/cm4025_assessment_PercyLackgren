@@ -1,8 +1,10 @@
 
 import { useOutletContext } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
 import Login from './components/Login';
 import Logout from './components/Logout';
 import Dropdowns from "./components/Dropdowns";
+import MyQuoteRow from "./components/MyQuotesRow";
 
 function SignUpLoginForm(props) {
 
@@ -12,24 +14,29 @@ function SignUpLoginForm(props) {
         <div>
             <div className="container"> 
                 <br/>
+
                 <h1 className="heading--border">
-                    {authenticatedUser ? (
+                    {/* Style welcome message */}
+                    {authenticatedUser ? 
                         "Welcome " + authenticatedUser.user.username 
-                    ) : (
-                        "Sign In / Register"
-                    )}
+                    : "Sign In / Register"}
                 </h1>
-                <br/>
                 {/* Show admin panel */}
-                {authenticatedUser ? (
-                    authenticatedUser.user.admin ?  <Dropdowns/> : "no"
-                ) : ""}
+                {authenticatedUser ? 
+                    authenticatedUser.user.admin ? 
+                        <Dropdowns/> 
+                    : ''
+                : ''}
                 <br/>
-                {authenticatedUser ? (
-                    <Logout />
-                    ) : (
-                    <Login />
-                )}
+
+                {/* Show Login/Logout panel */}
+                {authenticatedUser ? 
+                    <span>
+                        <MyQuoteRow userId={authenticatedUser.user._id}/>
+                        <br/>
+                        <Logout />
+                    </span>
+                : <Login />}
             </div>
         </div>
     );
