@@ -84,6 +84,8 @@ const AddQuote = () => {
                     case "months": 
                         days = response.data.timespan*28; 
                         break;
+                    default:
+                        break;
                 }
 
                 axiosInstance.get("/costs/quote/" + id).then((response) => {
@@ -128,10 +130,6 @@ const AddQuote = () => {
 
     // Check if user is authorized to edit quote
     useEffect(() => {
-        checkAuthentication()
-    }, [authenticatedUser, quote])
-
-    async function checkAuthentication() {
         // Check logged in, no login no access
         if (authenticatedUser !== null) {
             // check if new quote
@@ -149,7 +147,7 @@ const AddQuote = () => {
                 setReadOnly(false)
             }
         }
-    }
+    }, [authenticatedUser, quote])
 
     // function to split arrays from database into separate subtask arrays
     function splitArray(arr) {

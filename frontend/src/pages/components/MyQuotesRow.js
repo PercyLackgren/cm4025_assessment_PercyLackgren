@@ -48,6 +48,8 @@ function MyQuoteRow({userId}) {
           case "months": 
               days = quote.timespan*28; 
               break;
+          default:
+              break;
       }
 
       return quote.cost/28*days

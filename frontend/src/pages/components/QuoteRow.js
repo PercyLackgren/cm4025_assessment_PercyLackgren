@@ -15,6 +15,8 @@ function QuoteRow(props) {
         case "months": 
             days = props.quote.timespan*28; 
             break;
+        default:
+            break;
     }
 
     return (

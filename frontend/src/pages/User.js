@@ -1,6 +1,6 @@
 
 import { useOutletContext } from "react-router-dom";
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Login from './components/Login';
 import Logout from './components/Logout';
 import Dropdowns from "./components/Dropdowns";

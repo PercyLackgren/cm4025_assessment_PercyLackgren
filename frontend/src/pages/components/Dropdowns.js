@@ -7,7 +7,7 @@ const Dropdowns = ({ field }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axiosInstance.get("/dropdowns/field/" + "preset_rate");
+        const response = await axiosInstance.get("/dropdowns/field/preset_rate");
         setDropdowns(response.data);
       } catch (error) {
         console.error(error);
@@ -28,17 +28,6 @@ const Dropdowns = ({ field }) => {
     try {
       const response = await axiosInstance.put(`/dropdowns/${id}`, dropdownToUpdate);
       console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDeleteClick = async (id) => {
-    try {
-      const response = await axiosInstance.delete(`/dropdowns/${id}`);
-      console.log(response.data);
-      const updatedDropdowns = dropdowns.filter((dropdown) => dropdown._id !== id);
-      setDropdowns(updatedDropdowns);
     } catch (error) {
       console.error(error);
     }

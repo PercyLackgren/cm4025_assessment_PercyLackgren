@@ -9,11 +9,6 @@ function LoginForm() {
   const [message, setMessage] = useState('');
   const [messageClass, setMessageClass] = useState('');
 
-  const userData = {
-    username,
-    password
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -23,12 +18,11 @@ function LoginForm() {
 
     try {
       const response = await axiosInstance.post('/users/login', params)
-        .then(function (response) {
-          // console.log(response);
+        .then(function () {
           window.location.reload(); // Refresh page to update authentication status
         })
         .catch(function (error) {
-          // console.log(error);
+          console.log(error);
           setMessageClass("text-danger left-margin")
           setMessage("Incorrect username or password.")
       });
@@ -44,8 +38,8 @@ function LoginForm() {
 
     try {
       const response = await axiosInstance.post('/users/register', params)
-        .then(function (response) {
-           console.log(response);
+        .then(function () {
+          //  console.log(response);
           if (response.data.message === "Successful") {
             setMessageClass("text-success left-margin")
             setMessage("Success, you can now sign in.")
@@ -54,7 +48,7 @@ function LoginForm() {
             setMessage("Error registering, please try again.")
           }
         })
-        .catch(function (error) {
+        .catch(function () {
           // console.log(error);
           setMessageClass("text-danger left-margin")
           setMessage("Error registering, please try again")
