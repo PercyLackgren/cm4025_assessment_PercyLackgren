@@ -1,8 +1,8 @@
 {
-  "name": "pricecalculator",
+  "name": "quote_generator",
   "version": "1.0.0",
-  "description": "Single page app for working out cost of a website",
-  "main": "index.js",
+  "description": "Single page app for working out cost of a quote",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "app": "nodemon app.js",
@@ -10,17 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PamJohnston/PriceCalculator.git"
+    "url": "git+https://github.com/RobertGordonUniversity/cm4025_assessment-Graybang.git"
   },
   "keywords": [
     "simple"
   ],
-  "author": "Pam",
+  "author": "Percy Lackgren",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/PamJohnston/PriceCalculator/issues"
+    "url": "https://github.com/RobertGordonUniversity/cm4025_assessment-Graybang/issues"
   },
-  "homepage": "https://github.com/PamJohnston/PriceCalculator#readme",
+  "homepage": "https://github.com/RobertGordonUniversity/cm4025_assessment-Graybang#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
@@ -28,6 +28,7 @@
     "connect-mongo": "^5.0.0",
     "cookie-session": "^2.0.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",

@@ -1,4 +1,5 @@
 // Followed https://javascript.plainenglish.io/session-authentication-with-node-js-express-passport-and-mongodb-ffd1eea4521c
+require('dotenv').config();
 
 /*
   Include express and passport packages.
@@ -14,12 +15,18 @@ const LocalStrategy = require('passport-local').Strategy;
 const User = require("./models/User");
 
 /*
-  Database connection -- We are using MongoDB for this tutorial
+  Database connection
 */
 const MongoStore = require('connect-mongo');
 const mongoose = require('mongoose');
-const mongoString = 'mongo connection string';
-mongoose.connect('mongodb://127.0.0.1:27017');
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
 const db = mongoose.connection;
 
 const app = express();
@@ -30,7 +37,7 @@ const app = express();
 */
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
-  secret: 'your secret key',
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   store: new MongoStore({ mongoUrl: db.client.s.url })
@@ -49,7 +56,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init Middleware
-app.use(express.json({credentials: true, origin: "http://127.0.0.1:3000"}));
+app.use(express.json({
+  credentials: true, 
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000']
+}));
 
 // Enable CORS for all routes
 const cors = require('cors');

@@ -178,7 +178,8 @@ function calculateSubTaskCost(cost, admin) {
     } else {
       switch(element.cost_type) {
         case "otc":
-          subTaskCosts[element.sub_id] += element.cost;
+          // dont add, will be calculated on the frontend
+          // subTaskCosts[element.sub_id] += element.cost;
           break;
         case "Weekly":
           subTaskCosts[element.sub_id] += weeks*element.cost;
