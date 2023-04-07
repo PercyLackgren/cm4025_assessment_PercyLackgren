@@ -3,10 +3,8 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
-import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-
-axios.defaults.withCredentials = true
+import axiosInstance from '../axiosInstance';
 
 function Layout() {
   
@@ -16,7 +14,7 @@ function Layout() {
   useEffect(() => {
     async function checkAuthentication() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/users/profile');
+        const response = await axiosInstance.get('/users/profile');
         setAuthenticatedUser(response.data);
         // console.log(response.data);
       } catch (error) {

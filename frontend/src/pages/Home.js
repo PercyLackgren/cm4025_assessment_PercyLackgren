@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import '../index.css';
+import axiosInstance from '../axiosInstance';
 
 // components
 import QuoteRow from './components/QuoteRow';
-
-axios.defaults.withCredentials = true
 
 function Home() {
 
     const [quotes, setQuotes] = useState([]);
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/quotes').then((res) => {
+        axiosInstance.get('/quotes').then((res) => {
             setQuotes(res.data);
         }).catch((err) => {
             console.log('Error pulling quotes')

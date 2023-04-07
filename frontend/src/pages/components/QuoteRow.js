@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom'
 function QuoteRow(props) {
 
     const quote = props.quote;
-
     var days = 0
     switch (props.quote.timespan_type) {
         case "days": 

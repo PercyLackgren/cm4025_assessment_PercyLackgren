@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Login from "./Login"
 import Logout from './Logout';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 
 function Auth() {
   const [authenticatedUser, setAuthenticatedUser] = useState(null);
@@ -9,7 +9,7 @@ function Auth() {
   useEffect(() => {
     async function checkAuthentication() {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/users/profile');
+        const response = await axiosInstance.get('/users/profile');
         setAuthenticatedUser(response.data);
         console.log(response.data);
       } catch (error) {

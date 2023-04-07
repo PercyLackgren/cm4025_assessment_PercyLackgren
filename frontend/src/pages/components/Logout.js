@@ -1,13 +1,11 @@
 import React from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import Button from 'react-bootstrap/Button';
-
-axios.defaults.withCredentials = true
 
 function LogoutButton() {
   const handleLogout = async () => {
     try {
-      await axios.post('http://127.0.0.1:8000/api/users/logout');
+      await axiosInstance.post('/users/logout');
       window.location.reload(); // Refresh page to update authentication status
     } catch (error) {
       console.log(error.response.data);

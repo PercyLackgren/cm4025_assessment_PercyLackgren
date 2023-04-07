@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
@@ -22,7 +22,7 @@ function LoginForm() {
     params.append('password', password);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/users/login', params)
+      const response = await axiosInstance.post('/users/login', params)
         .then(function (response) {
           // console.log(response);
           window.location.reload(); // Refresh page to update authentication status
@@ -43,7 +43,7 @@ function LoginForm() {
     params.append('password', password);
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/users/register', params)
+      const response = await axiosInstance.post('/users/register', params)
         .then(function (response) {
            console.log(response);
           if (response.data.message === "Successful") {

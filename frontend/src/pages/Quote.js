@@ -2,7 +2,7 @@ import { useOutletContext } from "react-router-dom";
 import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import SubTask from "./components/SubTask"
-import axios from 'axios'
+import axiosInstance from '../axiosInstance';
 
 // Form validation
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -70,7 +70,7 @@ const AddQuote = () => {
         // Creating a new quote dont load anything
     } else {
         if (quote.description === undefined) {
-            axios.get("http://127.0.0.1:8000/api/quotes/" + id).then((response) => {
+            axiosInstance.get("/quotes/" + id).then((response) => {
                 setQuote({ ...response.data, username: response.data.user_id.username });
 
                 // calculate total number of days of loaded quote
@@ -87,7 +87,7 @@ const AddQuote = () => {
                         break;
                 }
 
-                axios.get("http://127.0.0.1:8000/api/costs/quote/" + id).then((response) => {
+                axiosInstance.get("/costs/quote/" + id).then((response) => {
                     // console.log(response.data)
                     // setData(response.data)
                     
@@ -169,7 +169,7 @@ const AddQuote = () => {
 
 
     if(!presetRates) {
-        axios.get("http://127.0.0.1:8000/api/dropdowns/field/" + "preset_rate").then((response) => {
+        axiosInstance.get("/dropdowns/field/" + "preset_rate").then((response) => {
             setPresetRates(response.data)
         })
     }
@@ -299,8 +299,8 @@ const AddQuote = () => {
             }
         }
 
-        axios({ method: method, 
-                url: "http://127.0.0.1:8000/api/quotes" + updateUrl, 
+        axiosInstance({ method: method, 
+                url: "/quotes" + updateUrl, 
                 data: quote}).then((response) => {
             // Iterate through data object to parse subtasks
             data.forEach( subtask => {
@@ -308,7 +308,7 @@ const AddQuote = () => {
                 subtask.forEach( cost => {
                     // If deleting quote
                     if(event.target.name === "remove") { 
-                        axios.delete("http://127.0.0.1:8000/api/costs/" + cost._id).then((response) => {
+                        axiosInstance.delete("/costs/" + cost._id).then((response) => {
                             console.log(response.msg, response.data);
                         });
                     } else {
@@ -318,13 +318,13 @@ const AddQuote = () => {
                             // console.log(response)
                             // set quote to newly generated id
                             cost.quote = response.data.id
-                            axios.post("http://127.0.0.1:8000/api/costs", cost).then((response) => {
+                            axiosInstance.post("/costs", cost).then((response) => {
                                 console.log(response.msg, response.data);
                             });
                             
                         } else {
                             // Else update existing
-                            axios.put("http://127.0.0.1:8000/api/costs/" + cost._id, cost).then((response) => {
+                            axiosInstance.put("/costs/" + cost._id, cost).then((response) => {
                                 console.log(response.msg, response.data);
                             });
                         }
@@ -335,7 +335,7 @@ const AddQuote = () => {
 
         // If any costs are on the delete list and no longer in the state, remove them from the database
         deleteList.forEach((id) => {
-            axios.delete("http://127.0.0.1:8000/api/costs/" + id).then((response) => {
+            axiosInstance.delete("/costs/" + id).then((response) => {
                 console.log(response.status, response.data);
             });
         })

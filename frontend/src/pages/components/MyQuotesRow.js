@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom'
-import axios from 'axios';
+import axiosInstance from '../../axiosInstance';
 
 function MyQuoteRow({userId}) {
 
@@ -9,7 +9,7 @@ function MyQuoteRow({userId}) {
     const [selQuotes, setSelQuotes] = useState([]);
 
     useEffect(() => {
-      axios.get(`http://127.0.0.1:8000/api/quotes/user_id/${userId}`)
+      axiosInstance.get(`/quotes/user_id/${userId}`)
         .then(res => setQuotes(res.data))
         .catch(err => console.log(err));
     }, [userId]);
@@ -30,7 +30,7 @@ function MyQuoteRow({userId}) {
     // function to send post to combine quotes, then redirect to new quote
     const handleCombine = () => {
       console.log(selQuotes)
-      axios.post("http://127.0.0.1:8000/api/quotes/combine", selQuotes)
+      axiosInstance.post("/quotes/combine", selQuotes)
         .then(res => window.open("/quote/" + res.data.combinedQuote._id))
         .catch(err => console.log(err));
     }
