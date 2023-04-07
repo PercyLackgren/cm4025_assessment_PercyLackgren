@@ -38,8 +38,7 @@ function LoginForm() {
 
     try {
       const response = await axiosInstance.post('/users/register', params)
-        .then(function () {
-          //  console.log(response);
+        .then(function (response) {
           if (response.data.message === "Successful") {
             setMessageClass("text-success left-margin")
             setMessage("Success, you can now sign in.")
