@@ -74,7 +74,7 @@ router.delete('/:id', (req, res) => {
 // @description get quote by user id field
 // @access Public
 router.get('/user_id/:user_id', (req, res) => {
-  console.log(req.params.user_id)
+  // console.log(req.params.user_id)
   Quote.find({ user_id: req.params.user_id })
     .then((quote) => {
       if (quote.length === 0) {
@@ -138,8 +138,8 @@ router.post('/combine', async (req, res) => {
     combinedQuote.timespan = 1
     combinedQuote.timespan_type = 'months'
 
-    console.log(description)
-    console.log(combinedQuote)
+    // console.log(description)
+    // console.log(combinedQuote)
     await combinedQuote.save();
 
     res.json({ success: true, combinedQuote });

@@ -27,7 +27,7 @@ const Dropdowns = ({ field }) => {
     const dropdownToUpdate = dropdowns.find((dropdown) => dropdown._id === id);
     try {
       const response = await axiosInstance.put(`/dropdowns/${id}`, dropdownToUpdate);
-      console.log(response.data);
+      alert(response.data.msg);
     } catch (error) {
       console.error(error);
     }

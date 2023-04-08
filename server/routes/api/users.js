@@ -53,7 +53,7 @@ We call 'isAuthenticated' to check if the request is
 authenticated or not. 
 */
 router.get('/profile', function(req, res) {
-  console.log(req.session)
+  // console.log(req.session)
   if (req.isAuthenticated()) {
     res.json({ user: req.user })
   } else {
