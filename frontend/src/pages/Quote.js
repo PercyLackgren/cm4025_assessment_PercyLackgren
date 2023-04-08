@@ -186,6 +186,11 @@ const AddQuote = () => {
     let handleCostChange = (index, sub_id, e) => {
         let newData = [...data];
         newData[sub_id][index][e.target.name] = e.target.value;
+        // Handle dropdown presets, seems like th wrong way to do this but it works
+        if(e.target.name === "preset_rate") {
+            newData[sub_id][index]["cost"] = presetRates[presetRates.findIndex((option) => option.name === e.target.value)].value
+            newData[sub_id][index]["cost_type"] = "Daily"
+        }
         setData(newData);
     }
 

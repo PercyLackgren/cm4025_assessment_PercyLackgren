@@ -11,8 +11,16 @@ function CostRow(props) {
 
     const workerRowSchema = yup.object().shape({
       preset_rate: yup.string().required('preset rate is required'),
-      cost_type: yup.string().notOneOf(['None'], 'Please select a cost type').required('Cost type is required'),
-      cost: yup.number().typeError('Cost must be a number').required('Cost is required').positive('Cost must be a positive number'),
+      cost_type: yup.string()
+        .when('preset_rate', {
+          is: val => val === 'None',
+          then: yup.string().notOneOf(['None'], 'Please select a cost type').required('Cost type is required'),
+        }),
+      cost: yup.number()
+        .when('preset_rate', {
+          is: val => val === 'None',
+          then: yup.number().required('Cost is required').positive('Cost must be a positive number'),
+        }),
     });
 
     const resourceRowSchema = yup.object().shape({
@@ -144,9 +152,9 @@ function CostRow(props) {
             placeholder="Enter cost"
             onChange={onChange} 
             disabled={props.readOnly}
+            value={row.cost}
             // Disable when a preset is selected, really jank code but it works.
-            {...row.preset_rate === "None" ? {} : {disabled: true, value: props.presetRates[props.presetRates.findIndex((option) => option.name === row.preset_rate)].value}}
-            value={row.cost}/>
+            {...row.preset_rate === "None" ? {} : {disabled: true, value: row.cost}}/>
             <br/>
             {errors.cost && <span className="error">{errors.cost}</span>}
         </td>
