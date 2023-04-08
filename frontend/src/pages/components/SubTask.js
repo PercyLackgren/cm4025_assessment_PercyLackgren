@@ -1,34 +1,46 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from 'react-bootstrap/Button';
-import WorkerRow from './WorkerRow';
-import ResourceRow from './ResourceRow';
+import CostRow from './CostRow';
 
 function SubTask(props) {
 
   var workerList = []
   var resourceList = []
 
-  workerList = props.subTask.map((row, k) => 
-    <WorkerRow 
-      row={row} 
-      presetRates={props.presetRates}
-      key={k} 
-      onChange={e => props.handleChange(k, row.sub_id, e)}
-      onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
-      readOnly={props.readOnly}
-      trigger={props.trigger}
-    ></WorkerRow>
-  )
-  resourceList = props.subTask.map((row, k) => 
-    <ResourceRow 
-      row={row} 
-      key={k} 
-      onChange={e => props.handleChange(k, row.sub_id, e)}
-      onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
-      readOnly={props.readOnly}
-      trigger={props.trigger}
-    ></ResourceRow>
-  )
+  workerList = props.subTask.map((row, k) => {
+    if (row.type === "Employee") {
+      return (
+        <CostRow 
+          row={row} 
+          presetRates={props.presetRates}
+          key={k} 
+          onChange={e => props.handleChange(k, row.sub_id, e)}
+          onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+          readOnly={props.readOnly}
+          trigger={props.trigger}
+        ></CostRow>
+      )
+    } else {
+      return null
+    }
+  });
+
+  resourceList = props.subTask.map((row, k) => {
+    if (row.type === "Resource") {
+      return (
+        <CostRow 
+          row={row} 
+          key={k} 
+          onChange={e => props.handleChange(k, row.sub_id, e)}
+          onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+          readOnly={props.readOnly}
+          trigger={props.trigger}
+        ></CostRow>
+      )
+    } else {
+      return null
+    }
+  });
 
   return (
     <div className='subtask'>

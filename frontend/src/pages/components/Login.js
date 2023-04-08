@@ -17,7 +17,7 @@ function LoginForm() {
     params.append('password', password);
 
     try {
-      const response = await axiosInstance.post('/users/login', params)
+      await axiosInstance.post('/users/login', params)
         .then(function () {
           window.location.reload(); // Refresh page to update authentication status
         })
@@ -37,7 +37,7 @@ function LoginForm() {
     params.append('password', password);
 
     try {
-      const response = await axiosInstance.post('/users/register', params)
+      await axiosInstance.post('/users/register', params)
         .then(function (response) {
           if (response.data.message === "Successful") {
             setMessageClass("text-success left-margin")

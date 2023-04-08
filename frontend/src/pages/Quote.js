@@ -147,7 +147,7 @@ const AddQuote = () => {
                 setReadOnly(false)
             }
         }
-    }, [authenticatedUser, quote])
+    }, [authenticatedUser, quote, id])
 
     // function to split arrays from database into separate subtask arrays
     function splitArray(arr) {
@@ -166,7 +166,7 @@ const AddQuote = () => {
 
 
     if(!presetRates) {
-        axiosInstance.get("/dropdowns/field/" + "preset_rate").then((response) => {
+        axiosInstance.get("/dropdowns/field/preset_rate").then((response) => {
             setPresetRates(response.data)
         })
     }
