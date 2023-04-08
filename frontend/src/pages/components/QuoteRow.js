@@ -25,7 +25,7 @@ function QuoteRow(props) {
         <td>{quote.user_id.username}</td>
         <td>{quote.description}</td>
         {/* <td>{quote.sub_id}</td> */}
-        <td>£{Math.round(quote.cost/28*days)}</td>
+        <td>£{Math.round((quote.cost/28*days)+quote.otc)}</td>
         <td><Link to={`/quote/${quote._id}`}>View</Link></td>
       </tr>
   

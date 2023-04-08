@@ -20,6 +20,9 @@ const QuotesSchema = new mongoose.Schema({
     cost: {
         type: Number,
     },
+    otc: {
+        type: Number,
+    },
     fudge: {
         type: Number,
         default: 0.9 + (0.3 * Math.random()), // scale of 0.9 - 1.2

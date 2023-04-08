@@ -101,10 +101,17 @@ const AddQuote = () => {
 
                     // Use days to convert resulting monthly cost from db
                     var costData = response.data.costs
+                    console.log(response.data.otcs)
                     costData = costData.map(function(element) {
                         return element/28*days;
                     });
 
+                    // Add one time costs outside of calculations
+                    var otcs = [response.data.otcs]
+                    otcs.forEach((otc, index) => {
+                        costData[index] += otc
+                    })
+                    
                     // Calculate the total cost
                     const costSum = costData.reduce((accumulator, currentValue) => {
                         return accumulator + currentValue;
@@ -115,10 +122,15 @@ const AddQuote = () => {
 
                     // get admin fudgelesss
                     var fudgeless = response.data.fudgeless
+                    var fudgelessOtcs = response.data.fudgelessOtcs
                     if (fudgeless) {
                         fudgeless = fudgeless.map(function(element) {
                             return element/28*days;
                         });
+
+                        fudgelessOtcs.forEach((otc, index) => {
+                            fudgeless[index] += otc
+                        })
 
                         const fudgelessSum = fudgeless.reduce((accumulator, currentValue) => {
                             return accumulator + currentValue;

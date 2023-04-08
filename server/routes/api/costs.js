@@ -31,10 +31,16 @@ router.get('/quote/:id', (req, res) => {
       }
 
       // calculate total costs before nulling data
-      var subCosts = calculateSubTaskCost(cost, false);
+      var subTaskCost = calculateSubTaskCost(cost, false);
+      var subCosts = subTaskCost[0]
+      var otcs = subTaskCost[1]
       if (isAdmin) {
-        var fudgelessCosts = calculateSubTaskCost(cost, isAdmin);
+        subTaskCost = calculateSubTaskCost(cost, isAdmin);
+        var fudgelessCosts = subTaskCost[0]
+        var fudgelessOtcs = subTaskCost[1]
       }
+
+      console.log(subCosts)
 
       // Remove costs if user not permitted
       cost.forEach( element => {
@@ -47,15 +53,16 @@ router.get('/quote/:id', (req, res) => {
         }
       })
 
-      // Update the original quote with the fudged cost.
       const sum = subCosts.reduce((accumulator, currentValue) => {
         return accumulator + currentValue;
       }, 0);      
 
+
       const query = { _id: req.params.id };
-      const update = { cost: sum };
+      const update = { cost: sum, otc: otcs };
       const options = { new: true };
       
+      // Update the original quote with the fudged cost.
       quote.findOneAndUpdate(query, update, options).then(() => {
           console.log('Quote updated successfully');
         }).catch((err) => {
@@ -66,7 +73,9 @@ router.get('/quote/:id', (req, res) => {
       res.json({
         data: cost,
         costs: subCosts,
-        fudgeless: fudgelessCosts
+        otcs: otcs,
+        fudgeless: fudgelessCosts,
+        fudgelessOtcs: fudgelessOtcs
       })
     })
     .catch(err => res.status(404).json({ noquotefound: 'No cost found' }));
@@ -135,6 +144,7 @@ function calculateSubTaskCost(cost, admin) {
   
   // calculate costs for one month, 4 weeks per month with 5 working days of 8 hours
   var subTaskCosts = []
+  var otcs =  []
 
   // Pre-define some randomness based off of the fudge factor
   var fudge = cost[0].quote.fudge
@@ -164,6 +174,7 @@ function calculateSubTaskCost(cost, admin) {
   cost.forEach( element => {
     if (subTaskCosts[element.sub_id] === undefined) {
       subTaskCosts[element.sub_id] = 0
+      otcs[element.sub_id] = 0
     }
 
     if(element.type === 'Employee') {  
@@ -179,7 +190,7 @@ function calculateSubTaskCost(cost, admin) {
       switch(element.cost_type) {
         case "otc":
           // dont add, will be calculated on the frontend
-          // subTaskCosts[element.sub_id] += element.cost;
+          otcs[element.sub_id] += element.cost;
           break;
         case "Weekly":
           subTaskCosts[element.sub_id] += weeks*element.cost;
@@ -196,8 +207,9 @@ function calculateSubTaskCost(cost, admin) {
     subTaskCosts = subTaskCosts.map(function(element) {
       return element * fudge;
     });
+    otcs = otcs*fudge
   }
-  return subTaskCosts
+  return [subTaskCosts, otcs];
 }
 
 module.exports = router;
