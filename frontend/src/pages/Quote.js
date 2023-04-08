@@ -49,6 +49,9 @@ const AddQuote = () => {
     // Hold quote validation errors
     const [errors, setErrors] = useState({});
 
+    // Hold cost validation error flags
+    const [costErrors, setCostErrors] = useState([])
+
     // Hold cost data
     const [data, setData] = useState([]);
 
@@ -165,7 +168,7 @@ const AddQuote = () => {
         return Object.values(result);
     }
 
-
+    // setup preset rates
     if(!presetRates) {
         axiosInstance.get("/dropdowns/field/preset_rate").then((response) => {
             setPresetRates(response.data)
@@ -260,19 +263,36 @@ const AddQuote = () => {
         setData(newData)
     }
 
-    // Alert output for data, for testing, submit to API once final
+    const handleUpdateChildData = (id, bool) => {
+        const updatedCostErrors = { ...costErrors };
+        updatedCostErrors[id] = { ...updatedCostErrors[id], errors: bool };
+        setCostErrors(updatedCostErrors);
+      };
+
+    // Validate data
     let handleSubmit = (event) => {
 
-        // console.log(costSchema.describe());
-
-        // console.log(data)
         setTrigger((trigger) => 1);
+        
+
+        // check cost validation errors
+        let isValidCosts = true
+        for (let key in costErrors) {
+            if (costErrors[key].errors) {
+                isValidCosts = false
+                break;
+            }
+        }
+
         quoteSchema
             .validate(quote, {abortEarly: false})
-            .then((validQuote) => {
+            .then(() => {
                 // Reset errors
                 setErrors({});
-                storeItems(data, event)
+                console.log(isValidCosts)
+                if(isValidCosts){
+                    storeItems(data, event)
+                }
             })
             .catch((err) => {
                 const errors = {};
@@ -439,6 +459,7 @@ const AddQuote = () => {
                 key={index}
                 trigger={trigger}
                 cost={subtaskCosts[index+1]}
+                handleUpdateChildData={handleUpdateChildData}
                 fudgeless={fudgelessCosts[index+1]}
                 ></SubTask>
             })}

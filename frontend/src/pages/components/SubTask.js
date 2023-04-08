@@ -18,6 +18,7 @@ function SubTask(props) {
           onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
           readOnly={props.readOnly}
           trigger={props.trigger}
+          handleUpdateChildData={props.handleUpdateChildData}
         ></CostRow>
       )
     } else {
@@ -35,6 +36,7 @@ function SubTask(props) {
           onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
           readOnly={props.readOnly}
           trigger={props.trigger}
+          handleUpdateChildData={props.handleUpdateChildData}
         ></CostRow>
       )
     } else {
@@ -56,8 +58,8 @@ function SubTask(props) {
           </div>
           <br/>
           <div className="opposite">
-            <h4>Workers</h4>
-            <Button variant="primary" onClick={props.addEmployee} hidden={props.readOnly}>Add Worker</Button>
+            <h4>Employees</h4>
+            <Button variant="primary" onClick={props.addEmployee} hidden={props.readOnly}>Add Employee</Button>
           </div>
           <table>
               <thead>
