@@ -4,7 +4,7 @@ import React from 'react';
 import Login from './components/Login';
 import Logout from './components/Logout';
 import Dropdowns from "./components/Dropdowns";
-import MyQuoteRow from "./components/MyQuotesRow";
+import MergeQuotes from "./components/MergeQuotes";
 
 function SignUpLoginForm(props) {
 
@@ -32,7 +32,7 @@ function SignUpLoginForm(props) {
                 {/* Show Login/Logout panel */}
                 {authenticatedUser ? 
                     <span>
-                        <MyQuoteRow userId={authenticatedUser.user._id}/>
+                        <MergeQuotes userId={authenticatedUser.user._id}/>
                         <br/>
                         <Logout />
                     </span>

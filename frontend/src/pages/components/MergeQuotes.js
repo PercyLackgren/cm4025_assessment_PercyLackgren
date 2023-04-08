@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom'
 import axiosInstance from '../../axiosInstance';
 
-function MyQuoteRow({userId}) {
+function MergeQuotes({userId}) {
 
     // const quote = props.quote;
     const [quotes, setQuotes] = useState([]);
@@ -91,4 +91,4 @@ function MyQuoteRow({userId}) {
     );
   };
   
-  export default MyQuoteRow;
+  export default MergeQuotes;

@@ -22,7 +22,7 @@ function QuoteRow(props) {
     return (
       
       <tr className='tr-quote'>
-        <td>{quote.user_id}</td>
+        <td>{quote.user_id.username}</td>
         <td>{quote.description}</td>
         {/* <td>{quote.sub_id}</td> */}
         <td>£{Math.round(quote.cost/28*days)}</td>

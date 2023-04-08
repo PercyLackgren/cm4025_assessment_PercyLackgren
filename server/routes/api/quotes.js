@@ -7,10 +7,12 @@ const quote = require('../../models/Quote');
 const Quote = require('../../models/Quote');
 
 // @route GET api/quote
-// @description Get all quote
+// @description Get all quotes
 // @access Public
 router.get('/', (req, res) => {
-  quote.find().select("-fudge")
+  quote.find()
+    .select("-fudge")
+    .populate({path: 'user_id', select: 'username'})
     .then(quote => res.json(quote))
     .catch(err => res.status(404).json({ noquotesfound: 'No quote found' }));
 });
@@ -19,7 +21,8 @@ router.get('/', (req, res) => {
 // @description Get single quote by id
 // @access Public
 router.get('/:id', (req, res) => {
-  quote.findById(req.params.id).populate({path: 'user_id', select: 'username'})
+  quote.findById(req.params.id)
+    .populate({path: 'user_id', select: 'username'})
     .then(quote => res.json(quote))
     .catch(err => res.status(404).json({ noquotefound: 'No quote found' }));
 });
@@ -84,52 +87,6 @@ router.get('/user_id/:user_id', (req, res) => {
         res.status(500).json({ error: err.message });
     });
 });
-
-// // Route to combine multiple quotes by id
-// router.post('/combine', async (req, res) => {
-//   try {
-//     const quoteIds = req.body.quoteIds; // Array of quote ids to combine
-
-//     // Find all quotes with the given ids
-//     const quotes = await Quote.find({ _id: { $in: quoteIds } });
-
-//     // Calculate total cost and timespan for the combined quotes
-//     let totalCost = 0;
-//     let totalTimespan = 0;
-//     let combinedDescription = '';
-//     quotes.forEach(quote => {
-//       totalCost += quote.cost * quote.fudge;
-//       if (quote.timespan_type === 'days') {
-//         totalTimespan += quote.timespan;
-//       } else if (quote.timespan_type === 'weeks') {
-//         totalTimespan += quote.timespan * 5;
-//       } else if (quote.timespan_type === 'months') {
-//         totalTimespan += quote.timespan * 28;
-//       }
-//       combinedDescription += quote.description + ' '; // concatenate descriptions
-//     });
-
-//     // Create a new combined quote
-//     const newQuote = new Quote({
-//       user_id: req.user.id,
-//       description: 'Combined quote',
-//       timespan_type: 'days',
-//       timespan: totalTimespan,
-//       cost: totalCost
-//     });
-
-//     // Save the new quote to the database
-//     await newQuote.save();
-
-//     // Delete the original quotes
-//     await Quote.deleteMany({ _id: { $in: quoteIds } });
-
-//     res.json({ success: true, quote: newQuote });
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Server Error');
-//   }
-// });
 
 // Route to combine quotes and update the associated costs
 router.post('/combine', async (req, res) => {

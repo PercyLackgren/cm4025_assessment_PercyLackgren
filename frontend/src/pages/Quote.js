@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import SubTask from "./components/SubTask"
 import axiosInstance from '../axiosInstance';
+import Footer from './components/Footer';
 
 // Form validation
 import * as yup from 'yup';
@@ -301,18 +302,21 @@ const AddQuote = () => {
             }
         }
 
-        axiosInstance({ method: method, 
+        // Create an array of promises to wait for
+        let promises = [];
+
+        return axiosInstance({ 
+                method: method, 
                 url: "/quotes" + updateUrl, 
-                data: quote}).then((response) => {
+                data: quote
+            }).then((response) => {
             // Iterate through data object to parse subtasks
             data.forEach( subtask => {
                 // Iterate through subtasks to pull data for database
                 subtask.forEach( cost => {
                     // If deleting quote
                     if(event.target.name === "remove") { 
-                        axiosInstance.delete("/costs/" + cost._id).then((response) => {
-                            console.log(response.msg, response.data);
-                        });
+                        promises.push(axiosInstance.delete("/costs/" + cost._id));
                     } else {
                         // When saving or updating a quote
                         if(cost._id === undefined) {
@@ -320,32 +324,31 @@ const AddQuote = () => {
                             // console.log(response)
                             // set quote to newly generated id
                             cost.quote = response.data.id
-                            axiosInstance.post("/costs", cost).then((response) => {
-                                console.log(response.msg, response.data);
-                            });
+                            promises.push(axiosInstance.post("/costs", cost));
                             
                         } else {
                             // Else update existing
-                            axiosInstance.put("/costs/" + cost._id, cost).then((response) => {
-                                console.log(response.msg, response.data);
-                            });
+                            promises.push(axiosInstance.put("/costs/" + cost._id, cost));
                         }
                     }
                 })
             })
-        })
+            // If any costs are on the delete list and no longer in the state, remove them from the database
+            deleteList.forEach((id) => {
+                axiosInstance.delete("/costs/" + id).then((response) => {
+                    console.log(response.status, response.data);
+                });
+            })
+            // reset delete list
+            setDeletelist([])
 
-        // If any costs are on the delete list and no longer in the state, remove them from the database
-        deleteList.forEach((id) => {
-            axiosInstance.delete("/costs/" + id).then((response) => {
-                console.log(response.status, response.data);
+            // Wait for all promises to resolve before refreshing the page
+            Promise.all(promises).then(() => {
+                // Refresh page
+                window.location.href = ("/quote/" + response.data.id);
+                // window.location.reload(); 
             });
         })
-        // reset delete list
-        setDeletelist([])
-
-        // Refresh page
-        // window.location.reload(); 
     }
     
     // console.log(quote)
@@ -458,6 +461,7 @@ const AddQuote = () => {
                     </button>
                 </div>
             </div>
+            <Footer />
         </div>
     )
   };

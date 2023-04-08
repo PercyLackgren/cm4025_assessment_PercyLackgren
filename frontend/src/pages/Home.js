@@ -18,7 +18,7 @@ function Home() {
     }, []);
 
     var quoteList
-
+    
     if(quotes.length === 0) {
         // console.log('No quotes')
     } else {
