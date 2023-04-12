@@ -107,7 +107,7 @@ const AddQuote = () => {
                     });
 
                     // Add one time costs outside of calculations
-                    var otcs = [response.data.otcs]
+                    var otcs = response.data.otcs
                     otcs.forEach((otc, index) => {
                         costData[index] += otc
                     })

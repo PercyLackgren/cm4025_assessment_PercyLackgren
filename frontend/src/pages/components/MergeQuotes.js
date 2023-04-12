@@ -4,7 +4,6 @@ import axiosInstance from '../../axiosInstance';
 
 function MergeQuotes({userId}) {
 
-    // const quote = props.quote;
     const [quotes, setQuotes] = useState([]);
     const [selQuotes, setSelQuotes] = useState([]);
 
@@ -36,7 +35,7 @@ function MergeQuotes({userId}) {
     }
 
     // Different way of getting quote cost compared to homepage
-    function calcualteQuoteCost(quote) {
+    function calcualteQuoteCost(quote, otc) {
       var days = 0
       switch (quote.timespan_type) {
           case "days": 
@@ -52,7 +51,7 @@ function MergeQuotes({userId}) {
               break;
       }
 
-      return quote.cost/28*days
+      return (quote.cost)/28*days+otc
     }
 
     return (
@@ -74,7 +73,7 @@ function MergeQuotes({userId}) {
                       {quote.description}
                     </td>
                     <td>
-                      £{Math.round(calcualteQuoteCost(quote))}
+                      £{Math.round(calcualteQuoteCost(quote, quotes[index].otc))}
                     </td>
                     <td>
                       <input type="checkbox" onChange={() => handleSelect(quote._id)} />

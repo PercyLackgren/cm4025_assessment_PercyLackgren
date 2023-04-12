@@ -33,14 +33,12 @@ router.get('/quote/:id', (req, res) => {
       // calculate total costs before nulling data
       var subTaskCost = calculateSubTaskCost(cost, false);
       var subCosts = subTaskCost[0]
-      var otcs = subTaskCost[1]
+      // var otcs = subTaskCost[1] This doesnt work for some reason?
       if (isAdmin) {
         subTaskCost = calculateSubTaskCost(cost, isAdmin);
         var fudgelessCosts = subTaskCost[0]
         var fudgelessOtcs = subTaskCost[1]
       }
-
-      console.log(subCosts)
 
       // Remove costs if user not permitted
       cost.forEach( element => {
@@ -57,9 +55,12 @@ router.get('/quote/:id', (req, res) => {
         return accumulator + currentValue;
       }, 0);      
 
+      const otcSum = subTaskCost[1].reduce((accumulator, currentValue) => {
+        return accumulator + currentValue;
+      }, 0);      
 
       const query = { _id: req.params.id };
-      const update = { cost: sum, otc: otcs };
+      const update = { cost: sum, otc: otcSum };
       const options = { new: true };
       
       // Update the original quote with the fudged cost.
@@ -73,7 +74,7 @@ router.get('/quote/:id', (req, res) => {
       res.json({
         data: cost,
         costs: subCosts,
-        otcs: otcs,
+        otcs: subTaskCost[1],
         fudgeless: fudgelessCosts,
         fudgelessOtcs: fudgelessOtcs
       })
@@ -207,8 +208,11 @@ function calculateSubTaskCost(cost, admin) {
     subTaskCosts = subTaskCosts.map(function(element) {
       return element * fudge;
     });
-    otcs = otcs*fudge
+    otcs = otcs.map(function(element) {
+      return element * fudge;
+    });
   }
+
   return [subTaskCosts, otcs];
 }
 
