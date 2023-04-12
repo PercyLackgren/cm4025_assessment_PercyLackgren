@@ -146,8 +146,6 @@ router.delete('/:id', (req, res) => {
     })
 });
 
-// TODO otc is not calculated correctly ree
-
 // Function to generate subtask costs, fudge and fudgeless
 function calculateSubTaskCost(cost, admin) {
   

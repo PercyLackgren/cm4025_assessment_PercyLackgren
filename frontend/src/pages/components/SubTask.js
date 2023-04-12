@@ -14,8 +14,8 @@ function SubTask(props) {
           row={row} 
           presetRates={props.presetRates}
           key={k} 
-          onChange={e => props.handleChange(k, row.sub_id, e)}
-          onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+          handleCostChange={e => props.handleCostChange(k, props.index, e,)}
+          onDelete={e => props.handleRemoveItem(k, props.index, e)}
           readOnly={props.readOnly}
           trigger={props.trigger}
           handleUpdateChildData={props.handleUpdateChildData}
@@ -32,8 +32,8 @@ function SubTask(props) {
         <CostRow 
           row={row} 
           key={k} 
-          onChange={e => props.handleChange(k, row.sub_id, e)}
-          onDelete={e => props.handleRemoveItem(k, row.sub_id, e)}
+          handleCostChange={e => props.handleCostChange(k, props.index, e)}
+          onDelete={e => props.handleRemoveItem(k, props.index, e)}
           readOnly={props.readOnly}
           trigger={props.trigger}
           handleUpdateChildData={props.handleUpdateChildData}

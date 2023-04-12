@@ -199,13 +199,13 @@ const AddQuote = () => {
     }
 
     // When changes on form happen update the state
-    let handleCostChange = (index, sub_id, e) => {
+    let handleCostChange = (cost_index, sub_index, e) => {
         let newData = [...data];
-        newData[sub_id][index][e.target.name] = e.target.value;
+        newData[sub_index][cost_index][e.target.name] = e.target.value;
         // Handle dropdown presets, seems like th wrong way to do this but it works
         if(e.target.name === "preset_rate") {
-            newData[sub_id][index]["cost"] = presetRates[presetRates.findIndex((option) => option.name === e.target.value)].value
-            newData[sub_id][index]["cost_type"] = "Daily"
+            newData[sub_index][cost_index]["cost"] = presetRates[presetRates.findIndex((option) => option.name === e.target.value)].value
+            newData[sub_index][cost_index]["cost_type"] = "Daily"
         }
         setData(newData);
     }
@@ -268,13 +268,13 @@ const AddQuote = () => {
     }
 
     // Remove item when clicked
-    let handleRemoveItem = (i, sub_id) => {
+    let handleRemoveItem = (i, sub_index) => {
         let newData = [...data]
         // Save _id of cost when removing
-        if(newData[sub_id][i]._id !== undefined) {
-            setDeletelist([...deleteList, newData[sub_id][i]._id])
+        if(newData[sub_index][i]._id !== undefined) {
+            setDeletelist([...deleteList, newData[sub_index][i]._id])
         }
-        newData[sub_id].splice(i,1)
+        newData[sub_index].splice(i,1)
         setData(newData)
     }
 
@@ -469,7 +469,7 @@ const AddQuote = () => {
                 addResource={e => addResource(index, e)}
                 handleRemove={handleRemove}
                 handleRemoveItem={handleRemoveItem}
-                handleChange={handleCostChange}
+                handleCostChange={handleCostChange}
                 subTask={child}
                 presetRates={presetRates}
                 onDelete={e => handleRemove(index, e)}

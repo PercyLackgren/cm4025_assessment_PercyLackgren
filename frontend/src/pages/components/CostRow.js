@@ -99,7 +99,7 @@ function CostRow(props) {
 
   // Handle changes to the quote section
   let onChange = (e) => {
-    props.onChange(e)
+    props.handleCostChange(e)
     handleValidation()
   }
 
