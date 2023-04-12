@@ -86,6 +86,7 @@ function MergeQuotes({userId}) {
               </tbody>
           </table>
           <button onClick={handleCombine} style={{"width" : "100%"}}>Combine Selected Quotes</button>
+          <p style={{color: "red"}}>Note that merged quotes will have their timespan set to 1 month by default.</p>
       </div>
     );
   };

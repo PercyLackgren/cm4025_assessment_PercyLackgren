@@ -128,11 +128,19 @@ router.delete('/:id', (req, res) => {
     .then( element => {
       // only worth checking if logged in
       if (req.user !== undefined) {
-        // Only if current user and owner match or is admin allow
-        if (req.user._id.toString() === element.quote.user_id.toString() || req.user.admin) {
+        // If parent quote is not null, delete cost
+        if (element.quote !== null) {
+          // Only if current user and owner match or is admin allow
+          if (req.user._id.toString() === element.quote.user_id.toString() || req.user.admin) {
+            cost.findByIdAndRemove(req.params.id, req.body)
+              .then(cost => res.json({ mgs: 'cost entry deleted successfully' }))
+              .catch(err => res.status(404).json({ error: 'No such cost' }));
+          }
+        } else {
+          // Since this has no parent quote delete
           cost.findByIdAndRemove(req.params.id, req.body)
-            .then(cost => res.json({ mgs: 'cost entry deleted successfully' }))
-            .catch(err => res.status(404).json({ error: 'No such cost' }));
+          .then(cost => res.json({ mgs: 'cost entry deleted successfully' }))
+          .catch(err => res.status(404).json({ error: 'No such cost' }));
         }
       }
     })

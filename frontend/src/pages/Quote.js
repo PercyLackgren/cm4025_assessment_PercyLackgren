@@ -253,17 +253,20 @@ const AddQuote = () => {
         let newData = [...data]
         
         // Save the _ids of all subtask costs when removing to delete from database.
-        if (newData[i][1] !== undefined) {
-            let newDeleteList = [...deleteList]
-            newData[i].forEach((cost) => {
+        let newDeleteList = [...deleteList]
+        newData[i].forEach((cost) => {
+            if(cost._id !== undefined) {
                 newDeleteList.push(cost._id)
-            })
-            setDeletelist(newDeleteList)
-        }
+            }
+            
+        })
+        setDeletelist(newDeleteList)
+
+        // update state
         newData.splice(i,1)
         setData(newData)
     }
-    
+
     // Remove item when clicked
     let handleRemoveItem = (i, sub_id) => {
         let newData = [...data]
@@ -377,8 +380,11 @@ const AddQuote = () => {
             // Wait for all promises to resolve before refreshing the page
             Promise.all(promises).then(() => {
                 // Refresh page
-                window.location.href = ("/quote/" + response.data.id);
-                // window.location.reload(); 
+                if (response.data.id !== undefined) {
+                    window.location.href = ("/quote/" + response.data.id);
+                } else {
+                    window.location.href = ("/")
+                }
             });
         })
     }

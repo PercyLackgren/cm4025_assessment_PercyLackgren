@@ -94,7 +94,7 @@ router.post('/combine', async (req, res) => {
     const quote_ids = req.body;
     const combinedQuote = new Quote({ user_id: req.user._id });
 
-    // setup some helper variables
+    // setup variables
     let description = '';
     let buffer = 0
     let max_sub_id = 0
@@ -111,17 +111,32 @@ router.post('/combine', async (req, res) => {
       // cost += quote.cost;
 
       // Update the quote_id field in the associated Cost documents
-      const costs = await Cost.find({ quote: quote_id });
+      const costs = await Cost.find({ quote: quote_id }).sort({ 'quote': 1, 'sub_id': 1 });
+
+      // intialise last quote id
+      if(last_quote_id === '') {
+        last_quote_id = costs[0].quote
+      }
+
+      // Loop to update subt_id in order to preserve them
       for (const cost of costs) {
 
-        if (cost.quote !== last_quote_id) {
+        // run only encountering new quotes
+        if (!cost.quote.equals(last_quote_id)) {
+          // sanity check
+          console.log(cost.quote + " !== " + last_quote_id)
+          // note cost quote id
           last_quote_id = cost.quote
-          buffer = max_sub_id
+          // update buffer to max sub_id found + 1
+          buffer = max_sub_id+1
         }
 
+        // set cost sub_id as itself plus the buffer
         cost.sub_id = cost.sub_id+buffer
-        max_sub_id = cost.sub_id+1
+        // set the max_sub_id to the current sub_id
+        max_sub_id = cost.sub_id
 
+        // update the cost
         cost.quote = combinedQuote._id;
         await cost.save();
       }
