@@ -30,7 +30,7 @@ function MergeQuotes({userId}) {
     const handleCombine = () => {
       console.log(selQuotes)
       axiosInstance.post("/quotes/combine", selQuotes)
-        .then(res => window.open("/quote/" + res.data.combinedQuote._id))
+        .then(res => window.location.href = ("/quote/" + res.data.combinedQuote._id))
         .catch(err => console.log(err));
     }
 
