@@ -64,7 +64,7 @@ app.use(passport.session());
 // Enable CORS for all routes
 const cors = require('cors');
 app.use(cors({
-  origin: '*',
+  origin: 'https://cm4025-assessment-percy-lackgren.vercel.app',
   credentials: true,
 }));
 
