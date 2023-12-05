@@ -56,16 +56,16 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Init Middleware
-app.use(express.json({
-  credentials: true, 
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://cm4025-assessment-percy-lackgren.vercel.app/']
-}));
+// app.use(express.json({
+//   credentials: true, 
+//   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://cm4025-assessment-percy-lackgren.vercel.app/']
+// }));
 
 // Enable CORS for all routes
 const cors = require('cors');
-app.use(cors({ 
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://cm4025-assessment-percy-lackgren.vercel.app/'],
-    credentials: true 
+app.use(cors({
+  origin: '*',
+  credentials: true,
 }));
 
 // API routes
