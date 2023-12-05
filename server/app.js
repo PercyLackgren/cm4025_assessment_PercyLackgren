@@ -78,4 +78,10 @@ app.use('/api/costs', costs);
 app.use('/api/users', users);
 app.use('/api/dropdowns', dropdowns);
 
-app.listen(8000, () => { console.log('Server started.') });
+// Use PORT provided in environment or default to 3000
+const port = process.env.PORT || 3000;
+
+// Listen on `port` and 0.0.0.0
+app.listen(port, "0.0.0.0", function () {
+  console.log('Server started.')
+});
