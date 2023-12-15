@@ -65,6 +65,8 @@ app.use(passport.session());
 //   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://cm4025-assessment-percy-lackgren.vercel.app/']
 // }));
 
+app.set('trust proxy', 1)
+
 // Enable CORS for all routes
 const cors = require('cors');
 app.use(cors({
