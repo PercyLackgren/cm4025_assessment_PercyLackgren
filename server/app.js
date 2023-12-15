@@ -42,7 +42,7 @@ app.use(session({
   saveUninitialized: true,
   store: new MongoStore({ mongoUrl: db.client.s.url }),
   cookie: {
-    // sameSite: 'None', // Set SameSite attribute to None
+    sameSite: 'None', // Set SameSite attribute to None
     secure: true,      // Set Secure attribute to true for HTTPS
   },
 }));
