@@ -35,12 +35,17 @@ const app = express();
   Session configuration and utilization of the MongoStore for storing
   the session in the MongoDB database
 */
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(session({
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
-  store: new MongoStore({ mongoUrl: db.client.s.url })
+  store: new MongoStore({ mongoUrl: db.client.s.url }),
+  cookie: {
+    sameSite: 'None', // Set SameSite attribute to None
+    secure: true,      // Set Secure attribute to true for HTTPS
+  },
 }));
 
 /*
@@ -60,6 +65,8 @@ app.use(passport.session());
 //   credentials: true, 
 //   origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'https://cm4025-assessment-percy-lackgren.vercel.app/']
 // }));
+
+app.set('trust proxy', 1)
 
 // Enable CORS for all routes
 const cors = require('cors');
