@@ -35,7 +35,8 @@ const app = express();
   Session configuration and utilization of the MongoStore for storing
   the session in the MongoDB database
 */
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(session({
   secret: process.env.SECRET,
   resave: false,
